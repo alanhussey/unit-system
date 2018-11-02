@@ -1,10 +1,12 @@
 {
   "name": "unit-system",
-  "version": "0.0.1",
+  "version": "0.0.0-development",
   "description": "A library for defining unit systems and performing unit-safe calculations",
   "main": "src/index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "commit": "npx git-cz",
+    "semantic-release": "semantic-release"
   },
   "files": [
     "lib",
@@ -26,9 +28,14 @@
     "eslint-config-prettier": "^3.1.0",
     "eslint-plugin-prettier": "^3.0.0",
     "jest": "^23.6.0",
-    "prettier": "^1.14.3"
+    "prettier": "^1.14.3",
+    "semantic-release": "^15.10.6"
   },
   "dependencies": {
     "lodash-es": "^4.17.11"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alanhussey/unit-system.git"
   }
 }
