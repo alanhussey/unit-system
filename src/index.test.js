@@ -1,7 +1,5 @@
 const index = require('./index');
 
-describe('tests', () => {
-  it('pass', () => {
-    expect(index).toBe(null);
-  });
+test('has the expected exports', () => {
+  expect(index.Unit).not.toBe(undefined);
 });
