@@ -1,14 +1,10 @@
 const Unit = require('../Unit');
 const Aliases = require('./Aliases');
 
-describe('Aliases', () => {
+describe(Aliases, () => {
   let aliases;
   beforeEach(() => {
     aliases = new Aliases();
-  });
-
-  it('exists', () => {
-    expect(() => new Aliases()).not.toThrow();
   });
 
   describe('#set', () => {

@@ -1,11 +1,7 @@
 const Unit = require('../Unit');
 const UnitSystem = require('./UnitSystem');
 
-describe('UnitSystem', () => {
-  it('exists', () => {
-    expect(() => new UnitSystem()).not.toThrow();
-  });
-
+describe(UnitSystem, () => {
   it('can be defined with units', () => {
     const inch = new Unit('inch');
     const foot = new Unit('foot');
