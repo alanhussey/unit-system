@@ -1,4 +1,4 @@
-const { multiplyBy } = require('./conversion');
+const { multiplyBy, divideBy } = require('./conversion');
 const UnitSystem = require('./UnitSystem');
 const createUnitSystem = require('./createUnitSystem');
 
@@ -14,17 +14,38 @@ describe(createUnitSystem, () => {
 
   it('creates a functional unit system', () => {
     const { createUnit, m, convert } = createUnitSystem();
-    const inch = createUnit('inch', { alias: 'inches' });
-    const foot = createUnit('foot', {
-      alias: 'feet',
-      convert: { to: [inch, multiplyBy(12)] },
+
+    const kilometer = createUnit('kilometer', {
+      alias: 'km',
     });
-    const yard = createUnit('yard', {
-      alias: 'yards',
-      convert: { to: [foot, multiplyBy(3)] },
+    const meter = createUnit('meter', {
+      convert: {
+        from: [kilometer, multiplyBy(1000)],
+      },
+    });
+    const centimeter = createUnit('centimeter', {
+      convert: {
+        from: [meter, multiplyBy(100)],
+      },
     });
 
-    expect(convert(m`2 yards`, foot)).toEqual(m`6`.feet);
-    expect(convert(m`1 ${yard}`, inch)).toEqual(m`36`.inches);
+    const inch = createUnit('inch', {
+      convert: {
+        to: [centimeter, multiplyBy(2.54)],
+      },
+    });
+    const foot = createUnit('foot', {
+      convert: {
+        from: [inch, divideBy(12)],
+      },
+    });
+    const mile = createUnit('mile', {
+      alias: 'mile',
+      convert: {
+        to: [foot, multiplyBy(5280)],
+      },
+    });
+
+    expect(convert(m`1 mile`, kilometer)).toEqual(m`1.609344 km`);
   });
 });
