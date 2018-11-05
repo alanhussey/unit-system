@@ -8,12 +8,15 @@ describe(UnitSystem, () => {
     const inch = new Unit('inch');
     const foot = new Unit('foot');
     const system = new UnitSystem([
-      [inch, { alias: 'inches' }],
+      [inch, { alias: 'inches', convert: { to: [foot, divideBy(12)] } }],
       [foot, { alias: 'feet' }],
     ]);
 
     expect(system.getUnitForAlias('inches')).toBe(inch);
     expect(system.getUnitForAlias('feet')).toBe(foot);
+    expect(system.convert(new Measurement(12, inch), foot)).toEqual(
+      new Measurement(1, foot)
+    );
   });
 
   describe('#register', () => {
@@ -110,6 +113,24 @@ describe(UnitSystem, () => {
       const oneWatt = new Measurement(1, watt);
       expect(() => system.convert(oneWatt, inch)).toThrowError(
         new TypeError('Unable to find a converter from watt to inch')
+      );
+    });
+
+    it('throws an error if a Measurement is not provided', () => {
+      expect(() => {
+        system.convert({ value: 12, unit: inch }, foot);
+      }).toThrowError(
+        new TypeError(
+          'Expected a Measurement, got "{"value":12,"unit":{"name":"inch"}}" instead'
+        )
+      );
+    });
+
+    it('throws an error if a Unit is not provided', () => {
+      expect(() => {
+        system.convert(new Measurement(12, inch), { name: 'foot' });
+      }).toThrowError(
+        new TypeError('Expected a Unit, got "{"name":"inch"}" instead')
       );
     });
   });

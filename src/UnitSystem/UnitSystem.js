@@ -1,4 +1,5 @@
 const Measurement = require('../Measurement');
+const Unit = require('../Unit');
 const Aliases = require('./Aliases');
 const Converters = require('./Converters');
 
@@ -35,6 +36,14 @@ class UnitSystem {
   }
 
   convert(measurement, endUnit) {
+    if (!(measurement instanceof Measurement)) {
+      throw new TypeError(
+        `Expected a Measurement, got "${JSON.stringify(measurement)}" instead`
+      );
+    }
+    if (!(endUnit instanceof Unit)) {
+      throw new TypeError('Expected a Unit, got "{"name":"inch"}" instead');
+    }
     if (measurement.unit === endUnit) {
       return measurement;
     }
