@@ -6,5 +6,6 @@ test('has the expected exports', () => {
     Measurement: require('./Measurement'),
     UnitSystem: require('./UnitSystem'),
     conversion: require('./conversion'),
+    createUnitSystem: require('./createUnitSystem'),
   });
 });
