@@ -31,6 +31,20 @@ describe(Aliases, () => {
       );
     });
 
+    it('throws if an alias is used twice for two different units', () => {
+      const inch = new Unit('inch');
+      aliases.set('inches', inch);
+      const inch2 = new Unit('imposter inch');
+
+      expect(() => {
+        aliases.set('inches', inch2);
+      }).toThrowError(
+        new Error(
+          'Cannot register "{"name":"imposter inch"}" under the alias "inches" - that alias is already taken by "{"name":"inch"}"'
+        )
+      );
+    });
+
     it('can also be called with `add`', () => {
       const inch = new Unit('inch');
       aliases.add('inches', inch);

@@ -1,4 +1,4 @@
-const { divideBy } = require('../conversion');
+const { divideBy, multiplyBy } = require('../conversion');
 const Measurement = require('../Measurement');
 const Unit = require('../Unit');
 const UnitSystem = require('./UnitSystem');
@@ -38,6 +38,21 @@ describe(UnitSystem, () => {
       expect(system.getUnitForAlias('inch')).toBe(inch);
       expect(system.getUnitForAlias('inches')).toBe(inch);
       expect(system.getUnitForAlias('in')).toBe(inch);
+    });
+  });
+
+  describe('#registerAll', () => {
+    it('registers multiple units', () => {
+      const system = new UnitSystem();
+      system.registerAll([
+        [new Unit('inch'), { alias: 'inches' }],
+        [new Unit('foot'), { alias: 'feet' }],
+        [new Unit('yard'), { alias: 'yards' }],
+      ]);
+
+      expect(system.getUnitForAlias('inches').name).toBe('inch');
+      expect(system.getUnitForAlias('feet').name).toBe('foot');
+      expect(system.getUnitForAlias('yards').name).toBe('yard');
     });
   });
 
@@ -131,6 +146,112 @@ describe(UnitSystem, () => {
         system.convert(new Measurement(12, inch), { name: 'foot' });
       }).toThrowError(
         new TypeError('Expected a Unit, got "{"name":"inch"}" instead')
+      );
+    });
+  });
+
+  describe('#merge', () => {
+    it('throws if a UnitSystem is not passed in', () => {
+      const mySystem = new UnitSystem();
+
+      expect(() => {
+        mySystem.merge(null);
+      }).toThrowError(
+        new TypeError('Expected a UnitSystem but got "[null]" instead')
+      );
+    });
+
+    it('adds the units from the other system to this system', () => {
+      const imperial = new UnitSystem();
+      imperial.register(new Unit('inch'), { alias: 'inches' });
+
+      const metric = new UnitSystem();
+      const centimeter = new Unit('centimeter');
+      metric.register(centimeter, { alias: 'cm' });
+
+      imperial.merge(metric);
+
+      expect(imperial.getUnitForAlias('cm')).toBe(centimeter);
+    });
+
+    it('adds the units from the multiple system to this system', () => {
+      const mySystem = new UnitSystem();
+      mySystem.register(new Unit('inch'), { alias: 'inches' });
+
+      const systemA = new UnitSystem();
+      const foot = new Unit('foot');
+      systemA.register(foot, { alias: 'feet' });
+      const systemB = new UnitSystem();
+      const yard = new Unit('yard');
+      systemB.register(yard, { alias: 'yards' });
+      const systemC = new UnitSystem();
+      const mile = new Unit('mile');
+      systemC.register(mile, { alias: 'miles' });
+
+      mySystem.merge(systemA, systemB, systemC);
+
+      expect(mySystem.getUnitForAlias('feet')).toBe(foot);
+      expect(mySystem.getUnitForAlias('yards')).toBe(yard);
+      expect(mySystem.getUnitForAlias('miles')).toBe(mile);
+    });
+
+    it('throws if there are conflicting aliases', () => {
+      const imperial = new UnitSystem();
+      imperial.register(new Unit('imperial inch'), { alias: 'inches' });
+
+      const unitedStatesCustomary = new UnitSystem();
+      unitedStatesCustomary.register(new Unit('US inch'), { alias: 'inches' });
+
+      expect(() => {
+        imperial.merge(unitedStatesCustomary);
+      }).toThrowError();
+    });
+
+    it('throws if there are conflicting converters', () => {
+      const imperial = new UnitSystem();
+      const metric = new UnitSystem();
+      const inch = new Unit('inch');
+      const centimeter = new Unit('centimeter');
+
+      metric.register(centimeter);
+      metric.register(inch, {
+        convert: { to: [centimeter, multiplyBy(2.54)] },
+      });
+      imperial.register(inch);
+      imperial.register(centimeter, {
+        convert: { to: [inch, divideBy(2.54)] },
+      });
+
+      expect(() => {
+        imperial.merge(metric);
+      }).toThrowError();
+    });
+  });
+
+  describe('#addConverter', () => {
+    it('throws if the given units have not been registered yet', () => {
+      const inch = new Unit('inch');
+      const foot = new Unit('foot');
+
+      const system = new UnitSystem();
+
+      expect(() => {
+        system.addConverter(inch, foot, divideBy(12));
+      }).toThrowError(
+        new Error(
+          'Cannot add a converter for a unit that has not been registered yet (inch is not registered)'
+        )
+      );
+    });
+
+    it('adds a converter for the given units', () => {
+      const inch = new Unit('inch');
+      const foot = new Unit('foot');
+      const system = new UnitSystem([[inch], [foot]]);
+      system.addConverter(inch, foot, divideBy(12));
+
+      expect(system.convert(new Measurement(12, inch), foot)).toEqual(
+        new Measurement(1, foot)
       );
     });
   });

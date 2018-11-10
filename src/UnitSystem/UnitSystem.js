@@ -5,14 +5,33 @@ const Converters = require('./Converters');
 
 class UnitSystem {
   constructor(units = []) {
+    this._units = [];
     this._aliases = new Aliases();
     this._converters = new Converters();
 
-    units.forEach(([unit, options]) => {
-      this.register(unit, options);
+    this.registerAll(units);
+  }
+
+  merge(...otherSystems) {
+    if (
+      otherSystems.some(otherSystem => !(otherSystem instanceof UnitSystem))
+    ) {
+      throw new TypeError(
+        `Expected a UnitSystem but got "${JSON.stringify(
+          otherSystems
+        )}" instead`
+      );
+    }
+
+    otherSystems.forEach(system => {
+      system._units.forEach(unit => {
+        this.register(...unit);
+      });
     });
   }
+
   register(unit, options = {}) {
+    this._units.push([unit, options]);
     const { alias, convert } = Object.assign({ alias: [] }, options);
 
     const aliases = [].concat(alias);
@@ -23,14 +42,30 @@ class UnitSystem {
     if (convert) {
       if (convert.from) {
         const [startUnit, converter] = convert.from;
-        this._converters.add(startUnit, unit, converter);
+        this.addConverter(startUnit, unit, converter);
       }
       if (convert.to) {
         const [endUnit, converter] = convert.to;
-        this._converters.add(unit, endUnit, converter);
+        this.addConverter(unit, endUnit, converter);
       }
     }
   }
+
+  registerAll(units) {
+    units.forEach(unit => this.register(...unit));
+  }
+
+  addConverter(startUnit, endUnit, converter) {
+    if (!this._units.find(([u]) => u === startUnit)) {
+      throw new Error(
+        `Cannot add a converter for a unit that has not been registered yet (${
+          startUnit.name
+        } is not registered)`
+      );
+    }
+    this._converters.add(startUnit, endUnit, converter);
+  }
+
   getUnitForAlias(alias) {
     return this._aliases.get(alias);
   }

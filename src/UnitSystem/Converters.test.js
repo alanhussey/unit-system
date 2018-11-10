@@ -1,5 +1,5 @@
 const Unit = require('../Unit');
-const { divideBy } = require('../conversion');
+const { divideBy, multiplyBy } = require('../conversion');
 const Converters = require('./Converters');
 
 describe(Converters, () => {
@@ -26,6 +26,21 @@ describe(Converters, () => {
         converters.add(inch, inch, divideBy(1));
       }).toThrowError(
         new Error('Cannot define conversion from a unit to itself (inch)')
+      );
+    });
+
+    it('throws when a converter is already registered for that unit pair', () => {
+      const centimeter = new Unit('centimeter');
+      const inch = new Unit('inch');
+      const converters = new Converters();
+      converters.add(centimeter, inch, divideBy(2.54));
+
+      expect(() => {
+        converters.add(inch, centimeter, multiplyBy(2.54));
+      }).toThrowError(
+        new Error(
+          'Cannot define conversion from inch to centimeter - conversion already exists'
+        )
       );
     });
   });

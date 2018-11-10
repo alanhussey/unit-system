@@ -31,6 +31,13 @@ class Converters {
   }
 
   _addPair(startUnit, endUnit, convert, cost = 1) {
+    if (this.registry.get(startUnit).has(endUnit)) {
+      throw new Error(
+        `Cannot define conversion from ${startUnit.name} to ${
+          endUnit.name
+        } - conversion already exists`
+      );
+    }
     this.registry.get(startUnit).set(endUnit, convert);
     this._edges.get(startUnit).set(endUnit, cost);
   }

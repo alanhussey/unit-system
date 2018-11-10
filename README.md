@@ -187,6 +187,28 @@ myUnitSystem.convert(new Measurement(12, inch), foot)
 // => new Measurement(1, foot)
 ```
 
+#### `.merge(...unitSystems)`
+
+Takes one or more other `UnitSystem`s and copies this unit into this one.
+
+```js
+const mySystem = new UnitSystem([
+    [new Unit('inch'), { alias: 'inches' }]
+]);
+
+const systemA = new UnitSystem([
+    [new Unit('foot')]
+]);
+const systemB = new UnitSystem([
+    [new Unit('yard')]
+]);
+const systemC = new UnitSystem([
+    [new Unit('mile')]
+]);
+
+mySystem.merge(systemA, systemB, systemC);
+```
+
 #### `.register(unit, { alias, convert })`
 
 Registers the given unit within the system.
@@ -211,6 +233,21 @@ system.register(inch, {
         from: [ foot, divideBy(12) ],
     },
 })
+```
+
+#### `.registerAll(units)`
+
+Like the first argument to `new UnitSystem(units)`, registers all the given units.
+
+#### `.addConverter(unit, converter)`
+
+Adds a converter for units that have already been registered.
+
+```js
+const inch = new Unit('inch');
+const foot = new Unit('foot');
+const system = new UnitSystem([[inch], [foot]]);
+system.addConverter(inch, foot, divideBy(12));
 ```
 
 #### `.getUnitForAlias(alias)`
