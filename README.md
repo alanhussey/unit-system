@@ -298,17 +298,54 @@ const mile = createUnit('mile', {
 It can convert miles to kilometers, even though a converter between those two was never explicitly declared:
 
 ```js
-const oneMileInKilometers = convert(m`1 mile`, kilometer);
-expect(oneMileInKilometers.value).toBe(1.609344);
+const oneMileInKilometers = system.convert(m`1 mile`, kilometer);
+oneMileInKilometers.value === 1.609344;
 ```
 
 When a multi-step converter is created, it will be cached, to save on the lookup time.
 
+
+#### `.add(...measurements)`
+
+`add` will take the given measurements and attempt to add them together, converting them if needed.
+
+Consider a `UnitSystem` that defines centimeters, inches, and feet:
+
+```js
+const centimeter = createUnit('centimeter');
+const inch = createUnit('inch', {
+    alias: 'inches',
+    convert: {
+        to: [centimeter, conversion.multiplyBy(2.54)],
+    },
+});
+const foot = createUnit('foot', {
+    alias: 'feet',
+    convert: {
+        from: [inch, conversion.divideBy(12)],
+    },
+});
+```
+
+It can add up several values in each of those units, converting them to the same unit:
+
+```js
+const eightFeet = system.add(
+    m`2 feet`,
+    m`18 inches`,
+    m`2 inches`,
+    m(15.24, centimeter),
+    m`10 inches`,
+    m`3 feet`
+);
+eightFeet.value === 8;
+eightFeet.unit === foot;
+```
+
 ## Roadmap
 
-- Basic math operators (`+ - * /`) - unit-safe math operations
+- Unit-safe math operations beyond `add`
 - Extended units:
   - Compound units - `m^2`, `m^3`
   - Rate units - `m/s`, `mph`
   - Compound rate units - `m / s^2`
-- `UnitSystem#extend(unitSystem)` - mix in the units from the given system (useful for distributing pre-built unit systems)

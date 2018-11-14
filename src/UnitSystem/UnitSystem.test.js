@@ -255,4 +255,36 @@ describe(UnitSystem, () => {
       );
     });
   });
+
+  describe('#add', () => {
+    it('adds', () => {
+      const inch = new Unit('inch');
+      const system = new UnitSystem([[inch]]);
+
+      expect(
+        system.add(
+          new Measurement(1, inch),
+          new Measurement(2, inch),
+          new Measurement(3, inch)
+        )
+      ).toEqual(new Measurement(6, inch));
+    });
+
+    it('adds measurements in compatible units', () => {
+      const inch = new Unit('inch');
+      const foot = new Unit('foot');
+      const system = new UnitSystem([
+        [inch],
+        [foot, { convert: { to: [inch, multiplyBy(12)] } }],
+      ]);
+
+      expect(
+        system.add(
+          new Measurement(1, foot),
+          new Measurement(7, inch),
+          new Measurement(5, inch)
+        )
+      ).toEqual(new Measurement(2, foot));
+    });
+  });
 });

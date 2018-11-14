@@ -12,8 +12,9 @@ test('has the expected exports', () => {
 
 describe('createUnitSystem', () => {
   const { createUnitSystem, conversion } = index;
+
   test('creates a functional unit system', () => {
-    const { createUnit, m, convert } = createUnitSystem();
+    const { createUnit, m, convert, system } = createUnitSystem();
 
     const kilometer = createUnit('kilometer', {
       alias: 'km',
@@ -30,11 +31,13 @@ describe('createUnitSystem', () => {
     });
 
     const inch = createUnit('inch', {
+      alias: 'inches',
       convert: {
         to: [centimeter, conversion.multiplyBy(2.54)],
       },
     });
     const foot = createUnit('foot', {
+      alias: 'feet',
       convert: {
         from: [inch, conversion.divideBy(12)],
       },
@@ -47,5 +50,16 @@ describe('createUnitSystem', () => {
     });
 
     expect(convert(m(1, mile), kilometer)).toEqual(m`1.609344 km`);
+
+    expect(
+      system.add(
+        m`2 feet`,
+        m`12 inches`,
+        m`2 inches`,
+        m(15.24, centimeter),
+        m`10 inches`,
+        m`3 feet`
+      )
+    ).toEqual(m`7.5 feet`);
   });
 });
