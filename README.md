@@ -3,7 +3,8 @@
 <center>
 ΜΕΤΡΩ ΧΡΩ
 
-*Use the measure*
+_Use the measure_
+
 </center>
 
 A library for defining unit systems and performing unit-safe calculations
@@ -11,13 +12,13 @@ A library for defining unit systems and performing unit-safe calculations
 ## Demo
 
 ```js
-const {createUnitSystem, conversion} = require('unit-system');
+const { createUnitSystem, conversion } = require('unit-system');
 
 const { createUnit, m, convert, add } = createUnitSystem();
 
 const inch = createUnit('inch');
 const yard = createUnit('yard', {
-    alias: ['yd', 'yard', 'yards'],
+  alias: ['yd', 'yard', 'yards'],
 });
 
 const foot = createUnit('foot', {
@@ -40,7 +41,7 @@ convert(twoYards, inch).value === 72;
 Most uses of `unit-system` start with `createUnitSystem()`.
 
 ```js
-const {createUnitSystem} = require('unit-system');
+const { createUnitSystem } = require('unit-system');
 
 const { createUnit, m, convert, system } = createUnitSystem();
 ```
@@ -53,9 +54,9 @@ Creates a new `Unit` and automatically registers it with `system` (the `UnitSyst
 const inch = createUnit('inch', { alias: 'inches' });
 
 const foot = createUnit('foot', {
-    convert: {
-        from: [ inch, conversion.divideBy(12) ],
-    },
+  convert: {
+    from: [inch, conversion.divideBy(12)],
+  },
 });
 ```
 
@@ -65,11 +66,11 @@ Shorthand function for creating new `Measurement` instances. If a unit is define
 
 ```js
 // All of are equivalent to `new Measurement(12, inch)`
-m`12 inches`
-m`12 ${inch}`
-m`12`.inches
-m(12).inches
-m(12, inch)
+m`12 inches`;
+m`12 ${inch}`;
+m`12`.inches;
+m(12).inches;
+m(12, inch);
 ```
 
 #### `convert(measurement, unit)`
@@ -77,7 +78,7 @@ m(12, inch)
 Given a `Measurement` and a `Unit`, `convert(measurement, unit)` will attempt to convert that measurement to the given unit. (see `UnitSystem#convert()` for details)
 
 ```js
-convert(m`24 inches`, foot)
+convert(m`24 inches`, foot);
 // => new Measurement(2, foot)
 ```
 
@@ -92,14 +93,14 @@ A collection of converter creators. A converter is an object with `forward` and 
 Converters shouldn't be used directly. Instead, define them when creating a unit, and `UnitSystem` will be able to automatically convert for you.
 
 ```js
-const {conversion} = require('unit-system');
+const { conversion } = require('unit-system');
 ```
 
 #### `conversion.slopeIntercept(slope, intercept = 0)`
 
 Given a `slope` and an optional `intercept`, produces a converter.
 
-*Also exported as: `multiplyBy`, `times`*
+_Also exported as: `multiplyBy`, `times`_
 
 ```js
 const celsiusToFahrenheit = conversion.slopeIntercept(9 / 5, 32);
@@ -123,12 +124,12 @@ feetToInches.backward(12) === 1;
 
 Given two example points on a line, produces a converter. Useful when a conversion can be more clearly expressed in terms of easily-understood examples.
 
-*Also exported as: `fromExamples`, `byExample`*
+_Also exported as: `fromExamples`, `byExample`_
 
 ```js
 const freezing = [0, 32];
 const boiling = [100, 212];
-const celsiusToFahrenheit = conversion.twoPoint(freezing, boiling)
+const celsiusToFahrenheit = conversion.twoPoint(freezing, boiling);
 
 celsiusToFahrenheit.forward(100) === 212;
 celsiusToFahrenheit.backward(32) === 0;
@@ -138,10 +139,10 @@ celsiusToFahrenheit.backward(32) === 0;
 
 Given a constant value, produces a converter. A special case of `slopeIntercept` where `slope` is always `1`.
 
-*Also exported as: `add`, `constant`*
+_Also exported as: `add`, `constant`_
 
 ```js
-const celsiusToKelvin = conversion.addConstant(273.15)
+const celsiusToKelvin = conversion.addConstant(273.15);
 
 celsiusToKelvin.forward(0) === 273.15;
 celsiusToKelvin.backward(-272.15) === 1;
@@ -152,7 +153,7 @@ celsiusToKelvin.backward(-272.15) === 1;
 The base unit type.
 
 ```js
-const {Unit} = require('unit-system');
+const { Unit } = require('unit-system');
 
 const inch = new Unit('inch');
 
@@ -164,7 +165,7 @@ unit.name === 'inch';
 A value type representing a number and its unit.
 
 ```js
-const {Measurement} = require('unit-system');
+const { Measurement } = require('unit-system');
 
 const oneInch = new Measurement(1, inch);
 
@@ -177,16 +178,16 @@ oneInch.unit === inch;
 A collection of units. Internally tracks aliases for units (used by `m` to look up the corresponding unit) and converters.
 
 ```js
-const {UnitSystem} = require('unit-system');
+const { UnitSystem } = require('unit-system');
 
 const myUnitSystem = new UnitSystem([
-    [inch, { alias: 'inches' }],
-    [foot, { convert: { from: [ inch, conversion.divideBy(12) ] } }],
+  [inch, { alias: 'inches' }],
+  [foot, { convert: { from: [inch, conversion.divideBy(12)] } }],
 ]);
 
 myUnitSystem.getUnitForAlias('inches') === inch;
 
-myUnitSystem.convert(new Measurement(12, inch), foot)
+myUnitSystem.convert(new Measurement(12, inch), foot);
 // => new Measurement(1, foot)
 ```
 
@@ -195,19 +196,11 @@ myUnitSystem.convert(new Measurement(12, inch), foot)
 Takes one or more other `UnitSystem`s and copies this unit into this one.
 
 ```js
-const mySystem = new UnitSystem([
-    [new Unit('inch'), { alias: 'inches' }]
-]);
+const mySystem = new UnitSystem([[new Unit('inch'), { alias: 'inches' }]]);
 
-const systemA = new UnitSystem([
-    [new Unit('foot')]
-]);
-const systemB = new UnitSystem([
-    [new Unit('yard')]
-]);
-const systemC = new UnitSystem([
-    [new Unit('mile')]
-]);
+const systemA = new UnitSystem([[new Unit('foot')]]);
+const systemB = new UnitSystem([[new Unit('yard')]]);
+const systemC = new UnitSystem([[new Unit('mile')]]);
 
 mySystem.merge(systemA, systemB, systemC);
 ```
@@ -231,11 +224,11 @@ If `convert` is provided, its properties `to` and `from` are used to register co
 
 ```js
 system.register(inch, {
-    convert: {
-        to: [ centimeter, multiplyBy(2.54) ],
-        from: [ foot, divideBy(12) ],
-    },
-})
+  convert: {
+    to: [centimeter, multiplyBy(2.54)],
+    from: [foot, divideBy(12)],
+  },
+});
 ```
 
 #### `.registerAll(units)`
@@ -270,31 +263,31 @@ Consider a `UnitSystem` that defines kilometers, meters, centimeters, inches, fe
 ```js
 const kilometer = createUnit('kilometer');
 const meter = createUnit('meter', {
-    convert: {
-        from: [ kilometer, conversion.multiplyBy(1000) ],
-    },
+  convert: {
+    from: [kilometer, conversion.multiplyBy(1000)],
+  },
 });
 const centimeter = createUnit('centimeter', {
-    convert: {
-        from: [ meter, conversion.multiplyBy(100) ],
-    },
+  convert: {
+    from: [meter, conversion.multiplyBy(100)],
+  },
 });
 
 const inch = createUnit('inch', {
-    convert: {
-        to: [ centimeter, conversion.multiplyBy(2.54) ],
-    },
+  convert: {
+    to: [centimeter, conversion.multiplyBy(2.54)],
+  },
 });
 const foot = createUnit('foot', {
-    convert: {
-        from: [ inch, conversion.divideBy(12) ],
-    },
+  convert: {
+    from: [inch, conversion.divideBy(12)],
+  },
 });
 const mile = createUnit('mile', {
-    alias: 'mile',
-    convert: {
-        to: [ foot, conversion.multiplyBy(5280) ],
-    },
+  alias: 'mile',
+  convert: {
+    to: [foot, conversion.multiplyBy(5280)],
+  },
 });
 ```
 
@@ -307,7 +300,6 @@ oneMileInKilometers.value === 1.609344;
 
 When a multi-step converter is created, it will be cached, to save on the lookup time.
 
-
 #### `.add(...measurements)`
 
 `add` will take the given measurements and attempt to add them together, converting them if needed.
@@ -317,16 +309,16 @@ Consider a `UnitSystem` that defines centimeters, inches, and feet:
 ```js
 const centimeter = createUnit('centimeter');
 const inch = createUnit('inch', {
-    alias: 'inches',
-    convert: {
-        to: [centimeter, conversion.multiplyBy(2.54)],
-    },
+  alias: 'inches',
+  convert: {
+    to: [centimeter, conversion.multiplyBy(2.54)],
+  },
 });
 const foot = createUnit('foot', {
-    alias: 'feet',
-    convert: {
-        from: [inch, conversion.divideBy(12)],
-    },
+  alias: 'feet',
+  convert: {
+    from: [inch, conversion.divideBy(12)],
+  },
 });
 ```
 
@@ -334,12 +326,12 @@ It can add up several values in each of those units, converting them to the same
 
 ```js
 const eightFeet = system.add(
-    m`2 feet`,
-    m`18 inches`,
-    m`2 inches`,
-    m(15.24, centimeter),
-    m`10 inches`,
-    m`3 feet`
+  m`2 feet`,
+  m`18 inches`,
+  m`2 inches`,
+  m(15.24, centimeter),
+  m`10 inches`,
+  m`3 feet`
 );
 eightFeet.value === 8;
 eightFeet.unit === foot;
