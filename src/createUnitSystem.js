@@ -2,6 +2,10 @@ const Unit = require('./Unit');
 const UnitSystem = require('./UnitSystem');
 const createMeasurement = require('./createMeasurement');
 
+function bound(obj, method) {
+  return obj[method].bind(obj);
+}
+
 function createUnitSystem(units) {
   const system = new UnitSystem(units);
 
@@ -11,11 +15,12 @@ function createUnitSystem(units) {
     return unit;
   }
 
-  const convert = (...args) => system.convert(...args);
+  const convert = bound(system, 'convert');
+  const add = bound(system, 'add');
 
   const m = createMeasurement(system);
 
-  return { m, createUnit, convert, system };
+  return { m, createUnit, convert, add, system };
 }
 
 module.exports = createUnitSystem;

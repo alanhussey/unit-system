@@ -13,21 +13,24 @@ A library for defining unit systems and performing unit-safe calculations
 ```js
 const {createUnitSystem, conversion} = require('unit-system');
 
-const { createUnit, m, convert } = createUnitSystem();
+const { createUnit, m, convert, add } = createUnitSystem();
 
 const inch = createUnit('inch');
-const yard = createUnit('yard', { alias: 'yards' });
-
-createUnit('foot', {
-    convert: {
-        to:   [ yards, conversion.divideBy(3) ],
-        from: [ inch,  conversion.divideBy(12) ],
-    },
+const yard = createUnit('yard', {
+    alias: ['yd', 'yard', 'yards'],
 });
 
-const twoYards = m`2 yards`;
+const foot = createUnit('foot', {
+  alias: 'feet',
+  convert: {
+    to: [yard, divideBy(3)],
+    from: [inch, divideBy(12)],
+  },
+});
 
-convert(twoYards, inch).value === 72
+const twoYards = add(m`1 yard`, m`3 feet`);
+
+convert(twoYards, inch).value === 72;
 ```
 
 ## Documentation

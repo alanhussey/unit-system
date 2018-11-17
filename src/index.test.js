@@ -14,7 +14,7 @@ describe('createUnitSystem', () => {
   const { createUnitSystem, conversion } = index;
 
   test('creates a functional unit system', () => {
-    const { createUnit, m, convert, system } = createUnitSystem();
+    const { createUnit, m, convert, add } = createUnitSystem();
 
     const kilometer = createUnit('kilometer', {
       alias: 'km',
@@ -52,7 +52,7 @@ describe('createUnitSystem', () => {
     expect(convert(m(1, mile), kilometer)).toEqual(m`1.609344 km`);
 
     expect(
-      system.add(
+      add(
         m`2 feet`,
         m`12 inches`,
         m`2 inches`,

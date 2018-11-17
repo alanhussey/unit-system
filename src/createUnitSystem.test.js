@@ -9,6 +9,7 @@ describe(createUnitSystem, () => {
       createUnit: jasmine.any(Function),
       m: jasmine.any(Function),
       convert: jasmine.any(Function),
+      add: jasmine.any(Function),
     });
   });
 
