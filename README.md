@@ -1,11 +1,8 @@
-# <center>`unit-system`</center>
+# `unit-system`
 
-<center>
 ΜΕΤΡΩ ΧΡΩ
 
 _Use the measure_
-
-</center>
 
 A library for defining unit systems and performing unit-safe calculations
 
