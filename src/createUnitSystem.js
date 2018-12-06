@@ -17,10 +17,11 @@ function createUnitSystem(units) {
 
   const convert = bound(system, 'convert');
   const add = bound(system, 'add');
+  const subtract = bound(system, 'subtract');
 
   const m = createMeasurement(system);
 
-  return { m, createUnit, convert, add, system };
+  return { m, createUnit, convert, add, subtract, system };
 }
 
 module.exports = createUnitSystem;

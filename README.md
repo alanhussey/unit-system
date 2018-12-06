@@ -334,9 +334,38 @@ eightFeet.value === 8;
 eightFeet.unit === foot;
 ```
 
+#### `.subtract(measurement1, measurement2)`
+
+`subtract` will take the two given measurements and attempt to subtract them, converting them if needed.
+
+Consider a `UnitSystem` that defines centimeters and inches:
+
+```js
+const centimeter = createUnit('centimeter');
+const inch = createUnit('inch', {
+  alias: 'inches',
+  convert: {
+    to: [centimeter, conversion.multiplyBy(2.54)],
+  },
+});
+```
+
+It can subtract two values in either of those units, converting them to the same unit:
+
+```js
+const eighteenInches = system.subtract(
+  m`24 inches`,
+  m(15.24, centimeter)
+);
+eighteenInches.value === 18;
+eighteenInches.unit === inch;
+```
+
+`subtract` does not support operating on more than 2 measurements at a time.
+
 ## Roadmap
 
-- Unit-safe math operations beyond `add`
+- Unit-safe math operations beyond `add` and `subtract`
 - Extended units:
   - Compound units - `m^2`, `m^3`
   - Rate units - `m/s`, `mph`

@@ -1,12 +1,5 @@
+const measurementsHaveSameUnit = require('./measurementsHaveSameUnit');
 const Measurement = require('../Measurement');
-
-function unitsDoNotMatch(measurement, index, array) {
-  if (index === 0) {
-    return false;
-  }
-  const previousMeasurement = array[index - 1];
-  return previousMeasurement.unit !== measurement.unit;
-}
 
 function _add(measurements) {
   return measurements.reduce(
@@ -22,7 +15,7 @@ function add(...measurements) {
   if (measurements.length === 1) {
     return measurements[0];
   }
-  if (measurements.some(unitsDoNotMatch)) {
+  if (!measurementsHaveSameUnit(measurements)) {
     throw new TypeError('Cannot add measurements with different units');
   }
   const unit = measurements[0].unit;

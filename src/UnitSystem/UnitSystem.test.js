@@ -287,4 +287,28 @@ describe(UnitSystem, () => {
       ).toEqual(new Measurement(2, foot));
     });
   });
+
+  describe('#subtract', () => {
+    it('subtracts', () => {
+      const inch = new Unit('inch');
+      const system = new UnitSystem([[inch]]);
+
+      expect(
+        system.subtract(new Measurement(3, inch), new Measurement(1, inch))
+      ).toEqual(new Measurement(2, inch));
+    });
+
+    it('subtracts measurements in compatible units', () => {
+      const inch = new Unit('inch');
+      const foot = new Unit('foot');
+      const system = new UnitSystem([
+        [inch],
+        [foot, { convert: { to: [inch, multiplyBy(12)] } }],
+      ]);
+
+      expect(
+        system.subtract(new Measurement(2, foot), new Measurement(12, inch))
+      ).toEqual(new Measurement(1, foot));
+    });
+  });
 });
