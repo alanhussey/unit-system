@@ -362,11 +362,3 @@ eighteenInches.unit === inch;
 ```
 
 `subtract` does not support operating on more than 2 measurements at a time.
-
-## Roadmap
-
-- Unit-safe math operations beyond `add` and `subtract`
-- Extended units:
-  - Compound units - `m^2`, `m^3`
-  - Rate units - `m/s`, `mph`
-  - Compound rate units - `m / s^2`
