@@ -11,6 +11,7 @@ describe(createUnitSystem, () => {
       convert: jasmine.any(Function),
       add: jasmine.any(Function),
       subtract: jasmine.any(Function),
+      multiply: jasmine.any(Function),
     });
   });
 

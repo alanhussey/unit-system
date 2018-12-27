@@ -14,7 +14,14 @@ describe('createUnitSystem', () => {
   const { createUnitSystem, conversion } = index;
 
   test('creates a functional unit system', () => {
-    const { createUnit, m, convert, add, subtract } = createUnitSystem();
+    const {
+      createUnit,
+      m,
+      convert,
+      add,
+      subtract,
+      multiply,
+    } = createUnitSystem();
 
     const kilometer = createUnit('kilometer', {
       alias: 'km',
@@ -56,7 +63,7 @@ describe('createUnitSystem', () => {
         subtract(m`4 feet`, m`12 inches`),
         m`2 inches`,
         m(15.24, centimeter),
-        m`10 inches`,
+        multiply(m`5 inches`, 2),
         m`3 feet`
       )
     ).toEqual(m`7.5 feet`);

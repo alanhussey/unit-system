@@ -362,3 +362,16 @@ eighteenInches.unit === inch;
 ```
 
 `subtract` does not support operating on more than 2 measurements at a time.
+
+#### `.multiply(measurement, ...numbers)`
+
+`multiply` will take the a measurement and multiply it with one or more numbers. The order of arguments is not important. Only one measurement can be supplied.
+
+```js
+const twelveInches = system.multiply(
+  m`4 inches`,
+  3
+);
+twelveInches.value === 12;
+twelveInches.unit === inch;
+```

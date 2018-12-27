@@ -311,4 +311,15 @@ describe(UnitSystem, () => {
       ).toEqual(new Measurement(1, foot));
     });
   });
+
+  describe('#multiply', () => {
+    it('multiplies', () => {
+      const inch = new Unit('inch');
+      const system = new UnitSystem([[inch]]);
+
+      expect(system.multiply(new Measurement(3, inch), 2)).toEqual(
+        new Measurement(6, inch)
+      );
+    });
+  });
 });
