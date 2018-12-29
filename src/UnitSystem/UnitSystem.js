@@ -78,7 +78,9 @@ class UnitSystem {
       );
     }
     if (!(endUnit instanceof Unit)) {
-      throw new TypeError('Expected a Unit, got "{"name":"inch"}" instead');
+      throw new TypeError(
+        `Expected a Unit, got "${JSON.stringify(endUnit)}" instead`
+      );
     }
     if (measurement.unit === endUnit) {
       return measurement;

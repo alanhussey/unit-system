@@ -145,7 +145,7 @@ describe(UnitSystem, () => {
       expect(() => {
         system.convert(new Measurement(12, inch), { name: 'foot' });
       }).toThrowError(
-        new TypeError('Expected a Unit, got "{"name":"inch"}" instead')
+        new TypeError('Expected a Unit, got "{"name":"foot"}" instead')
       );
     });
   });
