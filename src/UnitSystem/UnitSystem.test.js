@@ -322,4 +322,28 @@ describe(UnitSystem, () => {
       );
     });
   });
+
+  describe('#divide', () => {
+    it('divides', () => {
+      const inch = new Unit('inch');
+      const system = new UnitSystem([[inch]]);
+
+      expect(system.divide(new Measurement(6, inch), 2)).toEqual(
+        new Measurement(3, inch)
+      );
+    });
+
+    it('divides measurements in compatible units', () => {
+      const inch = new Unit('inch');
+      const foot = new Unit('foot');
+      const system = new UnitSystem([
+        [inch],
+        [foot, { convert: { to: [inch, multiplyBy(12)] } }],
+      ]);
+
+      expect(
+        system.divide(new Measurement(2, foot), new Measurement(12, inch))
+      ).toEqual(2);
+    });
+  });
 });

@@ -19,10 +19,11 @@ function createUnitSystem(units) {
   const add = bound(system, 'add');
   const subtract = bound(system, 'subtract');
   const multiply = bound(system, 'multiply');
+  const divide = bound(system, 'divide');
 
   const m = createMeasurement(system);
 
-  return { m, createUnit, convert, add, subtract, multiply, system };
+  return { m, createUnit, convert, add, subtract, multiply, divide, system };
 }
 
 module.exports = createUnitSystem;

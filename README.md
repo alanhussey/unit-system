@@ -353,10 +353,7 @@ const inch = createUnit('inch', {
 It can subtract two values in either of those units, converting them to the same unit:
 
 ```js
-const eighteenInches = system.subtract(
-  m`24 inches`,
-  m(15.24, centimeter)
-);
+const eighteenInches = system.subtract(m`24 inches`, m(15.24, centimeter));
 eighteenInches.value === 18;
 eighteenInches.unit === inch;
 ```
@@ -368,10 +365,27 @@ eighteenInches.unit === inch;
 `multiply` will take the a measurement and multiply it with one or more numbers. The order of arguments is not important. Only one measurement can be supplied.
 
 ```js
-const twelveInches = system.multiply(
-  m`4 inches`,
-  3
-);
+const twelveInches = system.multiply(m`4 inches`, 3);
 twelveInches.value === 12;
 twelveInches.unit === inch;
+```
+
+#### `.divide(measurement, measurement|number)`
+
+`divide` will take a measurement and divide it by the second argument, returning either another measurement or a number, depending on the type of the second argument.
+
+```js
+const fourInches = system.divide(m`12 inches`, 3);
+fourInches.value === 4;
+fourInches.unit === inch;
+```
+
+```js
+system.divide(m`18 inches`, m`6 inches`) === 3;
+```
+
+It will also automatically convert units when dividing two measurements:
+
+```js
+system.divide(m`3 feet`, m`18 inches`) === 2;
 ```

@@ -1,4 +1,4 @@
-const { add, subtract, multiply } = require('../math');
+const { add, subtract, multiply, divide } = require('../math');
 const Measurement = require('../Measurement');
 const Unit = require('../Unit');
 const Aliases = require('./Aliases');
@@ -94,16 +94,29 @@ class UnitSystem {
     return new Measurement(convert(measurement.value), endUnit);
   }
 
+  _normalizeUnits(measurements) {
+    const firstMeasurement = measurements.find(
+      measurement => measurement instanceof Measurement
+    );
+    const unit = firstMeasurement.unit;
+    return measurements.map(
+      measurement =>
+        measurement instanceof Measurement
+          ? this.convert(measurement, unit)
+          : measurement
+    );
+  }
   add(...measurements) {
-    const unit = measurements[0].unit;
-    return add(...measurements.map(m => this.convert(m, unit)));
+    return add(...this._normalizeUnits(measurements));
   }
   subtract(...measurements) {
-    const unit = measurements[0].unit;
-    return subtract(...measurements.map(m => this.convert(m, unit)));
+    return subtract(...this._normalizeUnits(measurements));
   }
   multiply(...values) {
     return multiply(...values);
+  }
+  divide(...values) {
+    return divide(...this._normalizeUnits(values));
   }
 }
 

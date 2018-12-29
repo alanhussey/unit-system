@@ -21,6 +21,7 @@ describe('createUnitSystem', () => {
       add,
       subtract,
       multiply,
+      divide,
     } = createUnitSystem();
 
     const kilometer = createUnit('kilometer', {
@@ -64,7 +65,7 @@ describe('createUnitSystem', () => {
         m`2 inches`,
         m(15.24, centimeter),
         multiply(m`5 inches`, 2),
-        m`3 feet`
+        divide(m`6 feet`, 2)
       )
     ).toEqual(m`7.5 feet`);
   });
