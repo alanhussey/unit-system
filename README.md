@@ -232,7 +232,7 @@ system.register(inch, {
 
 Like the first argument to `new UnitSystem(units)`, registers all the given units.
 
-#### `.addConverter(unit, converter)`
+#### `.addConverter(startUnit, endUnit, converter)`
 
 Adds a converter for units that have already been registered.
 
