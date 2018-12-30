@@ -251,9 +251,11 @@ Looks up the corresponding unit for the given alias.
 system.getUnitForAlias('inches') === inch;
 ```
 
-#### `.convert(measurement, unit)`
+#### `.convert(measurement, unit|string)`
 
 `convert` will take the given measurement and attempt to convert it the desired unit. It may take multiple hops to make that happen.
+
+If `unit` is a string, `convert` will assume it is an alias and will look up the corresponding unit.
 
 Consider a `UnitSystem` that defines kilometers, meters, centimeters, inches, feet, and miles:
 

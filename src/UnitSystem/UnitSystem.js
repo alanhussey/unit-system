@@ -71,11 +71,20 @@ class UnitSystem {
     return this._aliases.get(alias);
   }
 
-  convert(measurement, endUnit) {
+  convert(measurement, endUnitOrAlias) {
     if (!(measurement instanceof Measurement)) {
       throw new TypeError(
         `Expected a Measurement, got "${JSON.stringify(measurement)}" instead`
       );
+    }
+    let endUnit = endUnitOrAlias;
+    if (typeof endUnitOrAlias === 'string') {
+      endUnit = this.getUnitForAlias(endUnitOrAlias);
+      if (!endUnit) {
+        throw new Error(
+          `Unit matching alias "${endUnitOrAlias}" does not exist`
+        );
+      }
     }
     if (!(endUnit instanceof Unit)) {
       throw new TypeError(

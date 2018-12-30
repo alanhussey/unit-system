@@ -148,6 +148,27 @@ describe(UnitSystem, () => {
         new TypeError('Expected a Unit, got "{"name":"foot"}" instead')
       );
     });
+
+    it('can look up a Unit from its alias', () => {
+      system.register(inch);
+      system.register(foot, {
+        alias: 'feet',
+        convert: {
+          from: [inch, divideBy(12)],
+        },
+      });
+
+      const converted = system.convert(new Measurement(24, inch), 'feet');
+      expect(converted).toEqual(new Measurement(2, foot));
+    });
+
+    it('throws an error if an alias is provided but no matching Unit exists', () => {
+      expect(() =>
+        system.convert(new Measurement(24, inch), 'non_existent_alias')
+      ).toThrowError(
+        new Error('Unit matching alias "non_existent_alias" does not exist')
+      );
+    });
   });
 
   describe('#merge', () => {
