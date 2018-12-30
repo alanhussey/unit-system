@@ -70,6 +70,37 @@ m(12).inches;
 m(12, inch);
 ```
 
+##### Implicit conversion
+
+Measurements created with `m` can also be implicitly converted.
+
+###### `m(number, unit).as(unit)`
+
+```js
+const foot = createUnit('foot', {
+  convert: {
+    from: [inch, conversion.divideBy(12)],
+  },
+});
+const fourFeet = m`48 inches`.as(foot);
+fourFeet.value === 4;
+fourFeet.unit === foot;
+```
+
+###### `m(number, unit).in.<alias>`
+
+```js
+createUnit('foot', {
+  alias: 'feet',
+  convert: {
+    from: [inch, conversion.divideBy(12)],
+  },
+});
+const fourFeet = m`48 inches`.in.feet;
+fourFeet.value === 4;
+fourFeet.unit === foot;
+```
+
 #### `convert(measurement, unit)`
 
 Given a `Measurement` and a `Unit`, `convert(measurement, unit)` will attempt to convert that measurement to the given unit. (see `UnitSystem#convert()` for details)

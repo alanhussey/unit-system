@@ -1,15 +1,8 @@
+const createAliasedMeasurementProxy = require('./createAliasedMeasurementProxy');
 const Unit = require('./Unit');
-const Measurement = require('./Measurement');
 
 function createMeasurement(system) {
-  function createAliasLookupObject(value) {
-    return new Proxy(Object.create(null), {
-      get(target, alias) {
-        const unit = system.getUnitForAlias(alias);
-        return new Measurement(value, unit);
-      },
-    });
-  }
+  const { SystemMeasurement } = system;
 
   return function m(value, unit) {
     if (Array.isArray(value)) {
@@ -20,9 +13,12 @@ function createMeasurement(system) {
     }
 
     if (!(unit instanceof Unit)) {
-      return createAliasLookupObject(value);
+      return createAliasedMeasurementProxy(
+        system,
+        unit => new SystemMeasurement(value, unit)
+      );
     }
-    return new Measurement(value, unit);
+    return new SystemMeasurement(value, unit);
   };
 }
 

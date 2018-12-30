@@ -1,4 +1,5 @@
 const { add, subtract, multiply, divide } = require('../math');
+const createAliasedMeasurementProxy = require('../createAliasedMeasurementProxy');
 const Measurement = require('../Measurement');
 const Unit = require('../Unit');
 const Aliases = require('./Aliases');
@@ -9,6 +10,18 @@ class UnitSystem {
     this._units = [];
     this._aliases = new Aliases();
     this._converters = new Converters();
+
+    const system = this;
+    this.SystemMeasurement = class SystemMeasurement extends Measurement {
+      get in() {
+        return createAliasedMeasurementProxy(system, unit =>
+          system.convert(this, unit)
+        );
+      }
+      as(unit) {
+        return system.convert(this, unit);
+      }
+    };
 
     this.registerAll(units);
   }
@@ -102,7 +115,8 @@ class UnitSystem {
         }`
       );
     }
-    return new Measurement(convert(measurement.value), endUnit);
+    const { SystemMeasurement } = this;
+    return new SystemMeasurement(convert(measurement.value), endUnit);
   }
 
   _normalizeUnits(measurements) {
