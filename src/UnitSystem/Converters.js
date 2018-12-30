@@ -7,8 +7,8 @@ const DefaultMap = require('./DefaultMap');
 //   [ [a, b], [b, c], [c, d] ]
 function getEdges(path) {
   const edges = [];
-  for (let i = 1; i < path.length; i++) {
-    const edge = path.slice(i - 1, i + 1);
+  for (let i = 0; i < path.length - 1; i++) {
+    const edge = path.slice(i, i + 2);
     edges.push(edge);
   }
   return edges;
@@ -58,7 +58,8 @@ class Converters {
     if (!path) return null;
 
     const edges = getEdges(path);
-    const converter = flow(edges.map(([f, t]) => this.find(f, t)));
+    const converters = edges.map(([f, t]) => this.find(f, t));
+    const converter = flow(converters);
 
     // Cache this lookup so next time we can `_findShallow` instead
     this._addPair(from, to, converter, cost);

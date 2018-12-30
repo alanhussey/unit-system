@@ -1,11 +1,9 @@
+const Converter = require('./Converter');
 const { slopeIntercept, multiplyBy, times } = require('./slopeInterceptForm');
 
 describe(slopeIntercept, () => {
   it('returns a converter', () => {
-    expect(slopeIntercept()).toEqual({
-      forward: jasmine.any(Function),
-      backward: jasmine.any(Function),
-    });
+    expect(slopeIntercept()).toBeInstanceOf(Converter);
   });
 
   it.each([[1, 12], [2, 24], [0, 0]])(

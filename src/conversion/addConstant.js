@@ -1,8 +1,14 @@
+const { SlopeIntercept } = require('./slopeInterceptForm');
 const withAliases = require('./withAliases');
-const { slopeIntercept } = require('./slopeInterceptForm');
+
+class AddConstant extends SlopeIntercept {
+  constructor(constant) {
+    super(1, constant);
+  }
+}
 
 function addConstant(constant) {
-  return slopeIntercept(1, constant);
+  return new AddConstant(constant);
 }
 
 exports.addConstant = addConstant;
