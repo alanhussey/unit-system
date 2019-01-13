@@ -64,6 +64,7 @@ Shorthand function for creating new `Measurement` instances. If a unit is define
 ```js
 // All of are equivalent to `new Measurement(12, inch)`
 m`12 inches`;
+m`12inches`;
 m`12 ${inch}`;
 m`12`.inches;
 m(12).inches;
