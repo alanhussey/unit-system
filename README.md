@@ -11,7 +11,7 @@ A library for defining unit systems and performing unit-safe calculations
 ```js
 const { createUnitSystem, conversion } = require('unit-system');
 
-const { createUnit, m, convert, add } = createUnitSystem();
+const { createUnit, m, equal, add } = createUnitSystem();
 
 const inch = createUnit('inch');
 const yard = createUnit('yard', {
@@ -28,7 +28,7 @@ const foot = createUnit('foot', {
 
 const twoYards = add(m`1 yard`, m`3 feet`);
 
-convert(twoYards, inch).value === 72;
+equal(twoYards, m(72, inch)) === true;
 ```
 
 ## Documentation
@@ -392,3 +392,27 @@ It will also automatically convert units when dividing two measurements:
 ```js
 system.divide(m`3 feet`, m`18 inches`) === 2;
 ```
+
+#### `.equal(measurement, measurement)`
+
+`equal` will return `true` if the two measurements have the same value and unit (after conversion). Otherwise it returns `false`.
+
+```js
+system.equal(m`12 inches`, m`1 foot`) === true;
+```
+
+#### `.lessThan(measurement, measurement)`
+
+`lessThan` will return `true` if the first measurement is less than the second (after conversion). Otherwise it returns `false`.
+
+#### `.lessThanOrEqual(measurement, measurement)`
+
+`lessThanOrEqual` will return `true` if the first measurement is less than or equal to the second (after conversion). Otherwise it returns `false`.
+
+#### `.greaterThan(measurement, measurement)`
+
+`greaterThan` will return `true` if the first measurement is greater than the second (after conversion). Otherwise it returns `false`.
+
+#### `.greaterThanOrEqual(measurement, measurement)`
+
+`greaterThanOrEqual` will return `true` if the first measurement is greater than or equal to the second (after conversion). Otherwise it returns `false`.

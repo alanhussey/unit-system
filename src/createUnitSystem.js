@@ -16,14 +16,35 @@ function createUnitSystem(units) {
   }
 
   const convert = bound(system, 'convert');
+
   const add = bound(system, 'add');
   const subtract = bound(system, 'subtract');
   const multiply = bound(system, 'multiply');
   const divide = bound(system, 'divide');
 
+  const equal = bound(system, 'equal');
+  const lessThan = bound(system, 'lessThan');
+  const lessThanOrEqual = bound(system, 'lessThanOrEqual');
+  const greaterThan = bound(system, 'greaterThan');
+  const greaterThanOrEqual = bound(system, 'greaterThanOrEqual');
+
   const m = createMeasurement(system);
 
-  return { m, createUnit, convert, add, subtract, multiply, divide, system };
+  return {
+    m,
+    createUnit,
+    convert,
+    add,
+    subtract,
+    multiply,
+    divide,
+    equal,
+    lessThan,
+    lessThanOrEqual,
+    greaterThan,
+    greaterThanOrEqual,
+    system,
+  };
 }
 
 module.exports = createUnitSystem;

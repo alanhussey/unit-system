@@ -13,6 +13,11 @@ describe(createUnitSystem, () => {
       subtract: jasmine.any(Function),
       multiply: jasmine.any(Function),
       divide: jasmine.any(Function),
+      equal: jasmine.any(Function),
+      lessThan: jasmine.any(Function),
+      lessThanOrEqual: jasmine.any(Function),
+      greaterThan: jasmine.any(Function),
+      greaterThanOrEqual: jasmine.any(Function),
     });
   });
 

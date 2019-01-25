@@ -1,4 +1,11 @@
 const { add, subtract, multiply, divide } = require('../math');
+const {
+  equal,
+  lessThan,
+  lessThanOrEqual,
+  greaterThan,
+  greaterThanOrEqual,
+} = require('../comparison');
 const Measurement = require('../Measurement');
 const Unit = require('../Unit');
 const Aliases = require('./Aliases');
@@ -117,6 +124,7 @@ class UnitSystem {
           : measurement
     );
   }
+
   add(...measurements) {
     return add(...this._normalizeUnits(measurements));
   }
@@ -128,6 +136,22 @@ class UnitSystem {
   }
   divide(...values) {
     return divide(...this._normalizeUnits(values));
+  }
+
+  equal(...values) {
+    return equal(...this._normalizeUnits(values));
+  }
+  lessThan(...values) {
+    return lessThan(...this._normalizeUnits(values));
+  }
+  lessThanOrEqual(...values) {
+    return lessThanOrEqual(...this._normalizeUnits(values));
+  }
+  greaterThan(...values) {
+    return greaterThan(...this._normalizeUnits(values));
+  }
+  greaterThanOrEqual(...values) {
+    return greaterThanOrEqual(...this._normalizeUnits(values));
   }
 }
 

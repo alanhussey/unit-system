@@ -367,4 +367,166 @@ describe(UnitSystem, () => {
       ).toEqual(2);
     });
   });
+
+  describe('#equal', () => {
+    const inch = new Unit('inch');
+    const foot = new Unit('foot');
+    const system = new UnitSystem([
+      [inch],
+      [foot, { convert: { to: [inch, multiplyBy(12)] } }],
+    ]);
+
+    it.each([[6, 6, true], [5, 7, false]])(
+      'determines if two measurements are equal',
+      (left, right, expected) => {
+        expect(
+          system.equal(
+            new Measurement(left, inch),
+            new Measurement(right, inch)
+          )
+        ).toBe(expected);
+      }
+    );
+
+    it.each([[12, 1, true], [11, 1, false]])(
+      'determines if two measurements are equal when converted',
+      (left, right, expected) => {
+        expect(
+          system.equal(
+            new Measurement(left, inch),
+            new Measurement(right, foot)
+          )
+        ).toBe(expected);
+      }
+    );
+  });
+
+  describe('#lessThan', () => {
+    const inch = new Unit('inch');
+    const foot = new Unit('foot');
+    const system = new UnitSystem([
+      [inch],
+      [foot, { convert: { to: [inch, multiplyBy(12)] } }],
+    ]);
+
+    it.each([[1, 6, true], [99, 6, false]])(
+      'determines if %s inches is less than %s inches',
+      (left, right, expected) => {
+        expect(
+          system.lessThan(
+            new Measurement(left, inch),
+            new Measurement(right, inch)
+          )
+        ).toBe(expected);
+      }
+    );
+
+    it.each([[11, 1, true], [13, 1, false]])(
+      'determines if %s inches is less than %s foot when converted',
+      (left, right, expected) => {
+        expect(
+          system.lessThan(
+            new Measurement(left, inch),
+            new Measurement(right, foot)
+          )
+        ).toBe(expected);
+      }
+    );
+  });
+  describe('#lessThanOrEqual', () => {
+    const inch = new Unit('inch');
+    const foot = new Unit('foot');
+    const system = new UnitSystem([
+      [inch],
+      [foot, { convert: { to: [inch, multiplyBy(12)] } }],
+    ]);
+
+    it.each([[1, 6, true], [6, 6, true], [12, 6, false]])(
+      'determines if %s inches is less than or equal to %s inches',
+      (left, right, expected) => {
+        expect(
+          system.lessThanOrEqual(
+            new Measurement(left, inch),
+            new Measurement(right, inch)
+          )
+        ).toBe(expected);
+      }
+    );
+
+    it.each([[11, 1, true], [12, 1, true], [13, 1, false]])(
+      'determines if %s inches is less than or equal to %s foot when converted',
+      (left, right, expected) => {
+        expect(
+          system.lessThanOrEqual(
+            new Measurement(left, inch),
+            new Measurement(right, foot)
+          )
+        ).toBe(expected);
+      }
+    );
+  });
+  describe('#greaterThan', () => {
+    const inch = new Unit('inch');
+    const foot = new Unit('foot');
+    const system = new UnitSystem([
+      [inch],
+      [foot, { convert: { to: [inch, multiplyBy(12)] } }],
+    ]);
+
+    it.each([[6, 1, true], [1, 6, false]])(
+      'determines if %s inches is greater than %s inches',
+      (left, right, expected) => {
+        expect(
+          system.greaterThan(
+            new Measurement(left, inch),
+            new Measurement(right, inch)
+          )
+        ).toBe(expected);
+      }
+    );
+
+    it.each([[13, 1, true], [11, 1, false]])(
+      'determines if %s inches is greater than %s foot when converted',
+      (left, right, expected) => {
+        expect(
+          system.greaterThan(
+            new Measurement(left, inch),
+            new Measurement(right, foot)
+          )
+        ).toBe(expected);
+      }
+    );
+  });
+  describe('#greaterThanOrEqual', () => {
+    const inch = new Unit('inch');
+    const foot = new Unit('foot');
+    const system = new UnitSystem([
+      [inch],
+      [foot, { convert: { to: [inch, multiplyBy(12)] } }],
+    ]);
+
+    it.each([[6, 1, true], [1, 1, true], [1, 6, false]])(
+      'determines if %s inches is greater than or equal to %s inches',
+      (left, right, expected) => {
+        expect(
+          system.greaterThanOrEqual(
+            new Measurement(left, inch),
+            new Measurement(right, inch)
+          )
+        ).toBe(expected);
+      }
+    );
+
+    it.each([[13, 1, true], [12, 1, true], [11, 1, false]])(
+      'determines if %s inches is greater than or equal to %s foot when converted',
+      (left, right, expected) => {
+        expect(
+          system.greaterThanOrEqual(
+            new Measurement(left, inch),
+            new Measurement(right, foot)
+          )
+        ).toBe(expected);
+      }
+    );
+  });
 });
