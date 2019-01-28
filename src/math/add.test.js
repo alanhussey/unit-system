@@ -26,7 +26,7 @@ describe(add, () => {
       new Measurement(1, foot),
     ];
     expect(() => add(...measurements)).toThrowError(
-      new TypeError('Cannot add measurements with different units')
+      new TypeError('Cannot add measurements with different units: inch, foot')
     );
   });
 

@@ -16,7 +16,10 @@ function add(...measurements) {
     return measurements[0];
   }
   if (!measurementsHaveSameUnit(measurements)) {
-    throw new TypeError('Cannot add measurements with different units');
+    const units = Array.from(new Set(measurements.map(m => m.unit.name)));
+    throw new TypeError(
+      `Cannot add measurements with different units: ${units.join(', ')}`
+    );
   }
   const unit = measurements[0].unit;
   return new Measurement(_add(measurements), unit);
