@@ -95,6 +95,13 @@ describe(createMeasurement, () => {
     expect(m`12`.inches).toEqual(new Measurement(12, inch));
   });
 
+  it('throws an error if called as a tagged template with an alias property but alias does not exist', () => {
+    system.register(inch, { alias: 'inches' });
+    expect(() => m`12`.anchovies).toThrowError(
+      new Error('Could not find a unit for the alias "anchovies"')
+    );
+  });
+
   it('can be called as a tagged template with an inline unit', () => {
     expect(m`12 ${inch}`).toEqual(new Measurement(12, inch));
   });

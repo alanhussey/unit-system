@@ -29,6 +29,9 @@ function createMeasurement(system) {
     return new Proxy(Object.create(null), {
       get(target, alias) {
         const unit = system.getUnitForAlias(alias);
+        if (!unit) {
+          throw new Error(`Could not find a unit for the alias "${alias}"`);
+        }
         return m(value, unit);
       },
     });
