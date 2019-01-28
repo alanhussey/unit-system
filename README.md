@@ -21,8 +21,8 @@ const yard = createUnit('yard', {
 const foot = createUnit('foot', {
   alias: 'feet',
   convert: {
-    to: [yard, divideBy(3)],
-    from: [inch, divideBy(12)],
+    to: [yard, conversion.divideBy(3)],
+    from: [inch, conversion.divideBy(12)],
   },
 });
 
@@ -155,7 +155,7 @@ const { Unit } = require('unit-system');
 
 const inch = new Unit('inch');
 
-unit.name === 'inch';
+inch.name === 'inch';
 ```
 
 ### `new Measurement(number, unit)`
