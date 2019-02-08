@@ -18,6 +18,8 @@ class UnitSystem {
     this._converters = new Converters();
 
     this.registerAll(units);
+
+    this.measure = this.measure.bind(this);
   }
 
   merge(...otherSystems) {
@@ -152,6 +154,47 @@ class UnitSystem {
   }
   greaterThanOrEqual(...values) {
     return greaterThanOrEqual(...this._normalizeUnits(values));
+  }
+
+  _parse(str, unit = undefined) {
+    const LOOSE_VALUE_AND_OPTIONAL_ALIAS_RE = /^(-?[\d\.\,]+)\s*(.+)?$/;
+    const STRICT_VALUE_RE = /^-?((\d{1,3}(,\d{3})+)|(\d+))?(\.\d+)?$/;
+
+    const result = str.match(LOOSE_VALUE_AND_OPTIONAL_ALIAS_RE);
+
+    let value, alias;
+    [, value, alias] = result || [];
+
+    if (result === null || !STRICT_VALUE_RE.test(value)) {
+      throw Error(
+        `Tried to parse "${str}" but it doesn't appear to be a valid number`
+      );
+    }
+
+    value = value.replace(/,/g, '');
+
+    return [Number(value), unit || this.getUnitForAlias(alias)];
+  }
+
+  measure(value, unit) {
+    if (Array.isArray(value)) {
+      return this.measure(...this._parse(value[0], unit));
+    }
+
+    if (unit instanceof Unit) {
+      return new Measurement(value, unit);
+    }
+
+    const system = this;
+    return new Proxy(Object.create(null), {
+      get(target, property) {
+        const unit = system.getUnitForAlias(property);
+        if (!unit) {
+          throw new Error(`Could not find a unit for the alias "${property}"`);
+        }
+        return system.measure(value, unit);
+      },
+    });
   }
 }
 

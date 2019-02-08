@@ -1,6 +1,5 @@
 const Unit = require('./Unit');
 const UnitSystem = require('./UnitSystem');
-const createMeasurement = require('./createMeasurement');
 
 function bound(obj, method) {
   return obj[method].bind(obj);
@@ -28,7 +27,7 @@ function createUnitSystem(units) {
   const greaterThan = bound(system, 'greaterThan');
   const greaterThanOrEqual = bound(system, 'greaterThanOrEqual');
 
-  const m = createMeasurement(system);
+  const m = system.measure;
 
   return {
     m,

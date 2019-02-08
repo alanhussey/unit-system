@@ -59,16 +59,10 @@ const foot = createUnit('foot', {
 
 #### `m(number, unit)`
 
-Shorthand function for creating new `Measurement` instances. If a unit is defined with an alias, that alias can be used instead of passing in the unit.
+Shorthand function for creating new `Measurement` instances. If a unit is defined with an alias, that alias can be used instead of passing in the unit. (see `UnitSystem#measure()` for details)
 
 ```js
-// All of are equivalent to `new Measurement(12, inch)`
 m`12 inches`;
-m`12inches`;
-m`12 ${inch}`;
-m`12`.inches;
-m(12).inches;
-m(12, inch);
 ```
 
 #### `convert(measurement, unit)`
@@ -416,3 +410,24 @@ system.equal(m`12 inches`, m`1 foot`) === true;
 #### `.greaterThanOrEqual(measurement, measurement)`
 
 `greaterThanOrEqual` will return `true` if the first measurement is greater than or equal to the second (after conversion). Otherwise it returns `false`.
+
+#### `.measure(value, unit)`
+
+Shorthand function for creating new `Measurement` instances. If a unit is defined with an alias, that alias can be used instead of passing in the unit.
+
+```js
+// All of these are equivalent to `new Measurement(12, inch)`
+system.measure`12 inches`;
+system.measure`12inches`;
+system.measure`12 ${inch}`;
+system.measure`12`.inches;
+system.measure(12).inches;
+system.measure(12, inch);
+```
+
+`measure` is bound to `system` (its `this` cannot be changed), so it can be "detached" and used as a bare function (but still retain access to your unit system):
+
+```js
+const m = system.measure;
+m`12 inches`;
+```
