@@ -55,6 +55,51 @@ function unexpectedTokensError(declaration: string) {
   );
 }
 
+const tokenize = (declaration: string) =>
+  Array.from(
+    (function* () {
+      let token = '';
+      const chars = declaration.split('');
+      while (chars.length) {
+        const char = chars.shift();
+        switch (char) {
+          case ' ': {
+            break;
+          }
+
+          case '*':
+          case '/':
+          case '+':
+          case '-': {
+            if (token !== '') {
+              yield token;
+              token = '';
+            }
+            if (char === '-' && chars[0] === '>') {
+              chars.shift();
+              yield ARROW;
+            } else {
+              yield char;
+            }
+            break;
+          }
+
+          default: {
+            token += char;
+            break;
+          }
+        }
+      }
+      if (token) {
+        yield token;
+      }
+    })(),
+  );
+
+// Parse the string fragment declaring a conversion between two units.
+// In this example, `declaration` is the string fragment between UNIT:
+//     UNIT * a + b -> UNIT
+//         ^^^^^^^^^^^^
 function parseDeclaration(declaration: string) {
   let a = 1;
   let b = 0;
@@ -71,7 +116,7 @@ function parseDeclaration(declaration: string) {
     }
   };
 
-  const tokens = declaration.split(/\s+/).filter(token => token !== '');
+  const tokens = tokenize(declaration);
   while (tokens.length > 0) {
     const token = tokens.shift();
     switch (token) {
@@ -102,7 +147,6 @@ function parseDeclaration(declaration: string) {
       }
     }
   }
-
   return Convert.linear(a, b);
 }
 

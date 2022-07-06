@@ -184,43 +184,48 @@ describe(parseConversions, () => {
     `);
   });
 
-  it('parsing stress test', () => {
+  test('parsing stress test', () => {
     fc.assert(
       fc.property(
-        fc.string().map(name => new Unit(name)),
-        fc.string().map(name => new Unit(name)),
-        fc.array(
-          fc.boolean().map(bool => (bool ? ' ' : '')),
-          { minLength: 4, maxLength: 4 },
-        ),
-        fc.integer().filter(x => x > 0),
-        fc.integer().filter(x => x >= 0),
-        (start, end, spaces, a, b) => {
-          expect(
-            Array.from(
-              parseConversions(
-                ([
-                  '',
-                  // ${unitA}
-                  [
-                    '*',
-                    spaces[0],
-                    a,
-                    spaces[1],
-                    '+',
-                    spaces[2],
-                    b,
-                    spaces[3],
-                    '->',
-                  ].join(''),
-                  // ${unitB}
-                  '',
-                ] as unknown) as TemplateStringsArray,
-                start,
-                end,
-              ),
-            ),
-          ).toEqual([[start, Convert.linear(a, b), end]]);
+        fc.string().map((name) => new Unit(name)),
+        fc.string().map((name) => new Unit(name)),
+        fc.array(fc.constantFrom(' ', ''), { minLength: 4, maxLength: 4 }),
+        fc.nat().filter((x) => x > 0),
+        fc.nat(),
+        (start, end, [_, __, ___, ____], a, b) => {
+          const conversion = ([
+            '',
+            // ${unitA}
+            ['*', _, a, __, '+', ___, b, ____, '->'].join(''),
+            // ${unitB}
+            '',
+          ] as unknown) as TemplateStringsArray;
+          expect(Array.from(parseConversions(conversion, start, end))).toEqual([
+            [start, Convert.linear(a, b), end],
+          ]);
+        },
+      ),
+    );
+  });
+
+  test('parsing stress test (no b term)', () => {
+    fc.assert(
+      fc.property(
+        fc.string().map((name) => new Unit(name)),
+        fc.string().map((name) => new Unit(name)),
+        fc.array(fc.constantFrom(' ', ''), { minLength: 2, maxLength: 2 }),
+        fc.nat().filter((x) => x > 0),
+        (start, end, [_, __], a) => {
+          const conversion = ([
+            '',
+            // ${unitA}
+            ['*', _, a, __ + ' ', '->'].join(''),
+            // ${unitB}
+            '',
+          ] as unknown) as TemplateStringsArray;
+          expect(Array.from(parseConversions(conversion, start, end))).toEqual([
+            [start, Convert.linear(a), end],
+          ]);
         },
       ),
     );
