@@ -75,17 +75,90 @@ describe(parseConversions, () => {
     ).toEqual([[kelvin, Convert.linear(1, -273.15), celsius]]);
   });
 
+  it('ignores comment lines', () => {
+    const celsius = new Unit('Celsius');
+    const kelvin = new Unit('Kelvin');
+    expect(
+      Array.from(
+        parseConversions`
+          # this is how you convert from Kelvin to Celsius
+          ${kelvin} - 273.15 -> ${celsius}
+        `,
+      ),
+    ).toEqual([[kelvin, Convert.linear(1, -273.15), celsius]]);
+  });
+
+  it('ignores trailing comments', () => {
+    const celsius = new Unit('Celsius');
+    const kelvin = new Unit('Kelvin');
+    expect(
+      Array.from(
+        parseConversions`
+          ${kelvin} - 273.15 -> ${celsius} # this is how you convert from Kelvin to Celsius
+        `,
+      ),
+    ).toEqual([[kelvin, Convert.linear(1, -273.15), celsius]]);
+  });
+
+  it('ignores blank lines', () => {
+    const celsius = new Unit('Celsius');
+    const kelvin = new Unit('Kelvin');
+    expect(
+      Array.from(
+        parseConversions`
+
+          ${kelvin} - 273.15 -> ${celsius}
+        `,
+      ),
+    ).toEqual([[kelvin, Convert.linear(1, -273.15), celsius]]);
+  });
+
+  it('ignores lines with just whitespace', () => {
+    const celsius = new Unit('Celsius');
+    const kelvin = new Unit('Kelvin');
+    expect(
+      Array.from(
+        parseConversions`
+        
+        ${kelvin} - 273.15 -> ${celsius}
+              
+        `,
+      ),
+    ).toEqual([[kelvin, Convert.linear(1, -273.15), celsius]]);
+  });
+
+  it('throws on unexpected lines', () => {
+    expect(() =>
+      Array.from(parseConversions`
+    this could be a comment, but it doesn't start with #
+  `),
+    ).toThrowError(
+      new SyntaxError(
+        `Unexpected content (expected a declaration or a comment):
+"\\n    this could be a comment, but it doesn't start with #\\n  "`,
+      ),
+    );
+  });
+
+  it('throws on unparseable lines', () => {
+    expect(() =>
+      Array.from(parseConversions`
+    ${new Unit('left')} * 12 = ${new Unit('right')}
+  `),
+    ).toThrowError(
+      new SyntaxError(
+        `Unexpected content (expected a declaration or a comment):
+" * 12 = "`,
+      ),
+    );
+  });
+
   it.each([
     [
       `a`,
       '*',
       parseConversions`
         ${new Unit('left')} * -> ${new Unit('right')}
-      `,
-      `
-        "Conversion declaration is invalid:
-        <unit> * -> <unit>
-                 ^^"
       `,
     ],
 
@@ -95,11 +168,6 @@ describe(parseConversions, () => {
       parseConversions`
         ${new Unit('left')} / -> ${new Unit('right')}
       `,
-      `
-        "Conversion declaration is invalid:
-        <unit> / -> <unit>
-                 ^^"
-      `,
     ],
 
     [
@@ -108,11 +176,6 @@ describe(parseConversions, () => {
       parseConversions`
         ${new Unit('left')} + -> ${new Unit('right')}
       `,
-      `
-        "Conversion declaration is invalid:
-        <unit> + -> <unit>
-                 ^^"
-      `,
     ],
 
     [
@@ -120,11 +183,6 @@ describe(parseConversions, () => {
       '-',
       parseConversions`
         ${new Unit('left')} - -> ${new Unit('right')}
-      `,
-      `
-        "Conversion declaration is invalid:
-        <unit> - -> <unit>
-                 ^^"
       `,
     ],
   ])('throws when the %s is missing (%s)', (_, operator, parsed) => {

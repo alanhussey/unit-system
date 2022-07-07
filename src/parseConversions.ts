@@ -150,17 +150,35 @@ function parseDeclaration(declaration: string) {
   return Convert.linear(a, b);
 }
 
+const isComment = (fragment: string) => fragment.trim().startsWith('#');
+const isDeclaration = (fragment: string) => fragment.includes(ARROW);
+
 export default function* parseConversions(
   fragments: TemplateStringsArray,
   ...args: Unit[]
 ): Generator<[Unit, Converter, Unit]> {
   for (let index = 0; index < fragments.length; index++) {
-    const conversionDeclaration = fragments[index];
-    if (conversionDeclaration.includes(ARROW)) {
+    const fragment = fragments[index];
+    if (
+      // comment
+      isComment(fragment) ||
+      // empty line
+      fragment === '' ||
+      // all whitespace
+      /^\s+$/.test(fragment)
+    ) {
+      continue;
+    }
+    if (isDeclaration(fragment)) {
       const start = args[index - 1];
       const end = args[index];
-      const converter = parseDeclaration(conversionDeclaration);
+      const converter = parseDeclaration(fragment);
       yield [start, converter, end];
+    } else {
+      throw new SyntaxError(
+        `Unexpected content (expected a declaration or a comment):
+${JSON.stringify(fragment)}`,
+      );
     }
   }
 }
