@@ -247,19 +247,28 @@ describe(parseConversions, () => {
       fc.property(
         fc.string().map((name) => new Unit(name)),
         fc.string().map((name) => new Unit(name)),
-        fc.array(fc.constantFrom(' ', ''), { minLength: 4, maxLength: 4 }),
+        fc.constantFrom('*', '/'),
+        fc.constantFrom(' ', ''),
         fc.nat().filter((x) => x > 0),
-        fc.nat(),
-        (start, end, [_, __, ___, ____], a, b) => {
+        fc.constantFrom(' ', ''),
+        fc.constantFrom('+', '-'),
+        fc.constantFrom(' ', ''),
+        fc.nat().filter((x) => x > 0),
+        fc.constantFrom(' ', ''),
+        (start, end, md, _, a, __, pm, ___, b, ____) => {
           const conversion = ([
             '',
             // ${unitA}
-            ['*', _, a, __, '+', ___, b, ____, '->'].join(''),
+            [md, _, a, __, pm, ___, b, ____, '->'].join(''),
             // ${unitB}
             '',
           ] as unknown) as TemplateStringsArray;
           expect(Array.from(parseConversions(conversion, start, end))).toEqual([
-            [start, Convert.linear(a, b), end],
+            [
+              start,
+              Convert.linear(md === '*' ? a : 1 / a, pm === '+' ? b : -b),
+              end,
+            ],
           ]);
         },
       ),
