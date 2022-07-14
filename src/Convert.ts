@@ -34,9 +34,9 @@ export class LinearConverter implements Converter {
     const terms = converters.reduce(
       (terms, converter) => [
         converter.b,
-        ...terms.map(term => converter.a * term),
+        ...terms.map((term) => converter.a * term),
       ],
-      [0, 1],
+      [IDENTITY.b, IDENTITY.a],
     );
     const a = terms[terms.length - 1];
     const b = sum(terms.slice(0, -1));

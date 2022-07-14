@@ -8,11 +8,38 @@ const realFloat = () =>
 // all floats, excluding NaN, Infinity, zero, and numbers close to zero
 // (small numbers cause problems with floats)
 const realFloatNonZero = () =>
-  fc
-    .float({ next: true, noDefaultInfinity: true, noNaN: true })
-    .filter((n: number) => !(n <= 1e-200 && n >= -1e-200));
+  realFloat().filter((n) => !(n <= 1e-5 && n >= -1e-5));
 
 const linearConverterArgs = () => fc.tuple(realFloatNonZero(), realFloat());
+
+const linearConverter = () =>
+  linearConverterArgs().map((args) => new LinearConverter(...args));
+
+const isInvalidCoefficientError = (err: unknown): err is Error =>
+  err instanceof Error &&
+  /^A linear conversion with an `a` of .+ is not invertible$/.test(err.message);
+
+// Get a decimal representing the relative difference between two numbers.
+//   > getRelativeDifference(1, 1) -> 0
+//   > getRelativeDifference(5, 6) -> .2
+//   > getRelativeDifference(6, 5) -> .2
+//   > getRelativeDifference(5e100, 6e100) -> .2
+const getRelativeDifference = (left: number, right: number) => {
+  const [min, max] = left < right ? [left, right] : [right, left];
+  let diff;
+  diff = max / min - 1;
+  // strangely, the above comparison sometimes sends us down the wrong path
+  if (diff < 0) {
+    diff = min / max - 1;
+  }
+  if (diff < 0) {
+    throw new Error('Impossibly, the relative difference is always negative');
+  }
+  return diff;
+};
+
+const isVeryClose = (left: number, right: number, threshold = 1e-10) =>
+  left === right || getRelativeDifference(left, right) < threshold;
 
 describe('Convert', () => {
   describe(Convert.linear, () => {
@@ -36,11 +63,16 @@ describe(LinearConverter, () => {
     );
   });
 
-  it.each([0, Infinity, -Infinity, NaN])('disallows an `a` value of %s', a => {
-    expect(() => new LinearConverter(a)).toThrowError(
-      new Error(`A linear conversion with an \`a\` of ${a} is not invertible`),
-    );
-  });
+  it.each([0, Infinity, -Infinity, NaN])(
+    'disallows an `a` value of %s',
+    (a) => {
+      expect(() => new LinearConverter(a)).toThrowError(
+        new Error(
+          `A linear conversion with an \`a\` of ${a} is not invertible`,
+        ),
+      );
+    },
+  );
 
   describe('#inverse', () => {
     it('is the inverse of the defined linear converter', () => {
@@ -58,26 +90,31 @@ describe(LinearConverter, () => {
   });
 
   describe(LinearConverter.fromLinearConverters, () => {
-    it.skip('reduces an array of linear converters to a single linear converter', () => {
+    it('reduces an array of linear converters to a single linear converter', () => {
       fc.assert(
         fc.property(
-          fc.array(linearConverterArgs()),
+          fc.array(linearConverter()),
           realFloatNonZero(),
-          (argsArray, value) => {
-            const linearConverters = argsArray.map(
-              args => new LinearConverter(...args),
+          (linearConverters, value) => {
+            let linearConverter;
+            try {
+              linearConverter = LinearConverter.fromLinearConverters(
+                linearConverters,
+              );
+            } catch (err) {
+              if (isInvalidCoefficientError(err)) return true;
+              throw err;
+            }
+
+            const actual = linearConverter.convert(value);
+            const expected = linearConverters.reduce(
+              (result, converter) => converter.convert(result),
+              value,
             );
-            const linearConverter = LinearConverter.fromLinearConverters(
-              linearConverters,
-            );
-            // the derived converter produces the same result as running the array of converters in sequence
-            return (
-              linearConverter.convert(value) ===
-              linearConverters.reduce(
-                (result, converter) => converter.convert(result),
-                value,
-              )
-            );
+            // due to floating point imprecision, we get sufficient drift
+            // between the implementations that we need to allow for
+            // a very small difference between the results
+            return isVeryClose(expected, actual);
           },
         ),
       );
@@ -93,9 +130,20 @@ describe(simplifyConverters, () => {
 
   it('turns an array of LinearConverters into a single LinearConverter', () => {
     fc.assert(
-      fc.property(fc.array(linearConverterArgs()), argsArray => {
-        const converters = argsArray.map(args => new LinearConverter(...args));
-        return simplifyConverters(converters) instanceof LinearConverter;
+      fc.property(fc.array(linearConverter()), (converters) => {
+        try {
+          return simplifyConverters(converters) instanceof LinearConverter;
+        } catch (err) {
+          if (isInvalidCoefficientError(err)) {
+            // due to the nature of floats, it's possible for fast-check to give us
+            // a sequence of linear conversions that reduce to an `a` factor of `0`.
+            // We could try to .filter(...) that out, but we'd eventually just be
+            // implementing `LinearConverter.fromLinearConverters` again in this test.
+            return true;
+          } else {
+            throw err;
+          }
+        }
       }),
     );
   });
