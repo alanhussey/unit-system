@@ -9,7 +9,7 @@ export class LinearConverter implements Converter {
   readonly b: number;
 
   constructor(a: number, b = 0) {
-    if (a === 0 || Number.isNaN(a) || Math.abs(a) === Infinity) {
+    if (a === 0 || !Number.isFinite(a)) {
       throw new Error(
         `A linear conversion with an \`a\` of ${a} is not invertible`,
       );
@@ -32,14 +32,11 @@ export class LinearConverter implements Converter {
     // TODO long-hand explanation of how this works
     // TODO can this be simplified to a single loop?
     const terms = converters.reduce(
-      (terms, converter) => [
-        converter.b,
-        ...terms.map((term) => converter.a * term),
-      ],
+      (terms, { a, b }) => [b, ...terms.map((term) => a * term)],
       [IDENTITY.b, IDENTITY.a],
     );
-    const a = terms[terms.length - 1];
-    const b = sum(terms.slice(0, -1));
+    const a = terms.pop() as number;
+    const b = sum(terms);
     return new LinearConverter(a, b);
   }
 }
