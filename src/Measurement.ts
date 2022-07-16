@@ -1,23 +1,23 @@
-import ConverterCatalog from './ConverterCatalog';
+import Converters from './Converters';
 import Unit from './Unit';
 
 export default class Measurement {
   readonly value: number;
   readonly unit: Unit;
-  private catalog: ConverterCatalog;
+  private converters: Converters;
 
-  constructor(value: number, unit: Unit, catalog: ConverterCatalog) {
+  constructor(value: number, unit: Unit, converters: Converters) {
     this.value = value;
     this.unit = unit;
-    this.catalog = catalog;
+    this.converters = converters;
   }
 
   private measure(value: number, unit: Unit) {
-    return new Measurement(value, unit, this.catalog);
+    return new Measurement(value, unit, this.converters);
   }
 
   in(unit: Unit): Measurement {
-    const converter = this.catalog.getConverter(this.unit, unit);
+    const converter = this.converters.get(this.unit, unit);
     if (!converter) {
       throw new TypeError('Cannot convert given measurement to requested unit');
     }

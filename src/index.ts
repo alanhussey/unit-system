@@ -1,22 +1,21 @@
 import Measurement from './Measurement';
-import ConverterCatalog from './ConverterCatalog';
+import Converters from './Converters';
 import Unit from './Unit';
 import parseConversions from './parseConversions';
 
 type MeasureFn = (value: number, unit: Unit) => Measurement;
 
-const createMeasure = (catalog: ConverterCatalog): MeasureFn =>
+const createMeasure = (converters: Converters): MeasureFn =>
   function measure(value: number, unit: Unit) {
-    return new Measurement(value, unit, catalog);
+    return new Measurement(value, unit, converters);
   };
 
 function createUnitSystem(
   ...args: Parameters<typeof parseConversions>
 ): MeasureFn {
   const conversions = parseConversions(...args);
-  const catalog = new ConverterCatalog(conversions);
-  const measure = createMeasure(catalog);
-  Object.assign(measure, { catalog });
+  const converters = new Converters(conversions);
+  const measure = createMeasure(converters);
   return measure;
 }
 

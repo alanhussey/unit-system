@@ -1,4 +1,4 @@
-import ConverterCatalog from './ConverterCatalog';
+import Converters from './Converters';
 import Unit from './Unit';
 import Measurement from './Measurement';
 import Convert from './Convert';
@@ -7,9 +7,9 @@ const getMeasure = () => {
   const inches = new Unit('inch');
   const feet = new Unit('foot');
   const celsius = new Unit('celsius');
-  const catalog = new ConverterCatalog([[feet, Convert.linear(12), inches]]);
+  const converters = new Converters([[feet, Convert.linear(12), inches]]);
   const measure = (value: number, unit: Unit) =>
-    new Measurement(value, unit, catalog);
+    new Measurement(value, unit, converters);
 
   return [measure, { inches, feet, celsius }] as [
     (value: number, unit: Unit) => Measurement,
