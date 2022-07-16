@@ -3,12 +3,21 @@ import ConverterCatalog from './ConverterCatalog';
 import Unit from './Unit';
 import parseConversions from './parseConversions';
 
+type MeasureFn = (value: number, unit: Unit) => Measurement;
+
+const createMeasure = (catalog: ConverterCatalog): MeasureFn =>
+  function measure(value: number, unit: Unit) {
+    return new Measurement(value, unit, catalog);
+  };
+
 function createUnitSystem(
   ...args: Parameters<typeof parseConversions>
-): (value: number, unit: Unit) => Measurement {
+): MeasureFn {
   const conversions = parseConversions(...args);
   const catalog = new ConverterCatalog(conversions);
-  return (value: number, unit: Unit) => new Measurement(value, unit, catalog);
+  const measure = createMeasure(catalog);
+  Object.assign(measure, { catalog });
+  return measure;
 }
 
 export { createUnitSystem, Unit };
