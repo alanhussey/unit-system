@@ -7,13 +7,27 @@ import {
 import Unit from './Unit';
 import DefaultMap from './DefaultMap';
 
+type Edge = [Unit, Converter, Unit];
+
 export default class Converters {
   private graph: DefaultMap<Unit, Map<Unit, Converter>>;
 
-  constructor(edges: Iterable<[Unit, Converter, Unit]>) {
+  constructor(edges: Iterable<Edge>) {
     this.graph = new DefaultMap(() => new Map());
     for (const [start, converter, end] of edges) {
       this.set(start, end, converter);
+    }
+  }
+
+  *[Symbol.iterator]() {
+    const seen: DefaultMap<Unit, Set<Unit>> = new DefaultMap(() => new Set());
+    for (const [start, converters] of this.graph) {
+      for (const [end, converter] of converters) {
+        if (!seen.get(end).has(start)) {
+          seen.get(start).add(end);
+          yield <Edge>[start, converter, end];
+        }
+      }
     }
   }
 

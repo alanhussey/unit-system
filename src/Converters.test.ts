@@ -28,6 +28,58 @@ describe(Converters, () => {
     );
   });
 
+  describe('[Symbol.iterator]', () => {
+    it('implements the iterator protocol', () => {
+      const yards = new Unit('yard');
+      const feet = new Unit('foot');
+      const inches = new Unit('inch');
+      const converters = new Converters([
+        [feet, Convert.linear(12), inches],
+        [yards, Convert.linear(3), feet],
+      ]);
+
+      expect(() => [...converters]).not.toThrow();
+    });
+
+    it('yields a sequence of edges', () => {
+      const yards = new Unit('yard');
+      const feet = new Unit('foot');
+      const inches = new Unit('inch');
+      const converters = new Converters([
+        [feet, Convert.linear(12), inches],
+        [yards, Convert.linear(3), feet],
+      ]);
+
+      const isEdge = (edge: any): boolean =>
+        Array.isArray(edge) &&
+        edge.length === 3 &&
+        edge[0] instanceof Unit &&
+        !!edge[1]?.convert &&
+        typeof edge[1].convert === 'function' &&
+        edge[2] instanceof Unit;
+
+      for (const edge of converters) {
+        expect(isEdge(edge)).toBeTruthy();
+      }
+    });
+
+    it('can be used to clone a Converters', () => {
+      const yards = new Unit('yard');
+      const feet = new Unit('foot');
+      const inches = new Unit('inch');
+      const convertersA = new Converters([
+        [feet, Convert.linear(12), inches],
+        [yards, Convert.linear(3), feet],
+      ]);
+
+      const convertersB = new Converters(convertersA);
+
+      expect(convertersA.get(inches, yards)).toEqual(
+        convertersB.get(inches, yards),
+      );
+    });
+  });
+
   describe(Converters.prototype.get, () => {
     it('returns null when there are no converters', () => {
       const feet = new Unit('foot');
