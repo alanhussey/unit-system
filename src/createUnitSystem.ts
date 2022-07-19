@@ -1,30 +1,13 @@
-import Measurement from './Measurement';
+import createMeasure, { CONVERTERS, MeasureFn, isMeasureFn } from './measure';
 import Converters from './Converters';
 import Unit from './Unit';
 import parseConversions from './parseConversions';
 
-const __SECRET_INTERNALS_DO_NOT_USE = Symbol('secret unit-system internals');
-
-type MeasureFn = {
-  (value: number, unit: Unit): Measurement;
-  [__SECRET_INTERNALS_DO_NOT_USE]: Converters;
-};
-
-export const createMeasure = (converters: Converters): MeasureFn =>
-  Object.assign(
-    function measure(value: number, unit: Unit) {
-      return new Measurement(value, unit, converters);
-    },
-    { [__SECRET_INTERNALS_DO_NOT_USE]: converters },
-  );
-
-const isMeasureFn = (arg: unknown): arg is MeasureFn =>
-  typeof arg === 'function' &&
-  arg.hasOwnProperty(__SECRET_INTERNALS_DO_NOT_USE);
-
-function* chain<T>(...generators: Generator<T>[]): Generator<T> {
-  for (const generator of generators) {
-    yield* generator;
+function* chain<T>(...iterables: Iterable<T>[]): Generator<T> {
+  for (const iterable of iterables) {
+    for (const value of iterable) {
+      yield value;
+    }
   }
 }
 
@@ -34,19 +17,14 @@ function getAllConversions(
 ) {
   const conversions = parseConversions(fragments, ...args);
   const measures = args.filter(isMeasureFn);
-  return chain(
-    conversions,
-    ...measures.map((measure) =>
-      measure[__SECRET_INTERNALS_DO_NOT_USE][Symbol.iterator](),
-    ),
-  );
+  return chain(conversions, ...measures.map((measure) => measure[CONVERTERS]));
 }
 
 export function createUnitSystem(
   ...args: Parameters<typeof getAllConversions>
 ): MeasureFn {
-  const allConversions = getAllConversions(...args);
-  const converters = new Converters(allConversions);
+  const conversions = getAllConversions(...args);
+  const converters = new Converters(conversions);
   const measure = createMeasure(converters);
   return measure;
 }

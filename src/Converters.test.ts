@@ -1,4 +1,4 @@
-import Convert from './Convert';
+import Convert, { LinearConverter } from './Convert';
 import Converters from './Converters';
 import Unit from './Unit';
 
@@ -29,7 +29,7 @@ describe(Converters, () => {
   });
 
   describe('[Symbol.iterator]', () => {
-    it('implements the iterator protocol', () => {
+    it('implements the iterable protocol', () => {
       const yards = new Unit('yard');
       const feet = new Unit('foot');
       const inches = new Unit('inch');
@@ -50,16 +50,12 @@ describe(Converters, () => {
         [yards, Convert.linear(3), feet],
       ]);
 
-      const isEdge = (edge: any): boolean =>
-        Array.isArray(edge) &&
-        edge.length === 3 &&
-        edge[0] instanceof Unit &&
-        !!edge[1]?.convert &&
-        typeof edge[1].convert === 'function' &&
-        edge[2] instanceof Unit;
-
       for (const edge of converters) {
-        expect(isEdge(edge)).toBeTruthy();
+        expect(edge).toEqual([
+          expect.any(Unit),
+          expect.any(LinearConverter),
+          expect.any(Unit),
+        ]);
       }
     });
 

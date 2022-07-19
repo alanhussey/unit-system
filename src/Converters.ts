@@ -9,7 +9,7 @@ import DefaultMap from './DefaultMap';
 
 type Edge = [Unit, Converter, Unit];
 
-export default class Converters {
+export default class Converters implements Iterable<Edge> {
   private graph: DefaultMap<Unit, Map<Unit, Converter>>;
 
   constructor(edges: Iterable<Edge>) {
@@ -23,10 +23,10 @@ export default class Converters {
     const seen: DefaultMap<Unit, Set<Unit>> = new DefaultMap(() => new Set());
     for (const [start, converters] of this.graph) {
       for (const [end, converter] of converters) {
-        if (!seen.get(end).has(start)) {
-          seen.get(start).add(end);
-          yield <Edge>[start, converter, end];
-        }
+        // if the inverse has already been seen, skip this one
+        if (seen.get(end).has(start)) continue;
+        seen.get(start).add(end);
+        yield <Edge>[start, converter, end];
       }
     }
   }
