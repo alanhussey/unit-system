@@ -1,4 +1,4 @@
-import createMeasure, { getConvertersFromMeasure, MeasureFn, isMeasureFn } from './measure';
+import createMeasure, { getConvertersFromMeasure, MeasureFunction, isMeasureFunction } from './measure';
 import Converters from './Converters';
 import Unit from './Unit';
 import parseConversions from './parseConversions';
@@ -13,17 +13,17 @@ function* chain<T>(...iterables: Iterable<T>[]): Generator<T> {
 
 function getAllConversions(
   fragments: Parameters<typeof parseConversions>[0],
-  ...args: (Unit | MeasureFn)[]
+  ...args: (Unit | MeasureFunction)[]
 ) {
   const conversions = parseConversions(fragments, ...args);
-  const measures = args.filter(isMeasureFn);
+  const measures = args.filter(isMeasureFunction);
   const convertersFromMeasures = measures.map(getConvertersFromMeasure);
   return chain(conversions, ...convertersFromMeasures);
 }
 
 export function createUnitSystem(
   ...args: Parameters<typeof getAllConversions>
-): MeasureFn {
+): MeasureFunction {
   const conversions = getAllConversions(...args);
   const converters = new Converters(conversions);
   const measure = createMeasure(converters);

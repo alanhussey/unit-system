@@ -1,7 +1,7 @@
 import Converters from './Converters';
 import createMeasure, {
   getConvertersFromMeasure,
-  isMeasureFn,
+  isMeasureFunction,
 } from './measure';
 import Measurement from './Measurement';
 import { createUnit } from './Unit';
@@ -17,25 +17,25 @@ describe(createMeasure, () => {
   });
 });
 
-describe(isMeasureFn, () => {
+describe(isMeasureFunction, () => {
   it('returns false if the value is not a function', () => {
     const measure = {};
-    expect(isMeasureFn(measure)).toBe(false);
+    expect(isMeasureFunction(measure)).toBe(false);
   });
 
   it('returns false if the value does not have a CONVERTERS property', () => {
     const measure = () => {};
-    expect(isMeasureFn(measure)).toBe(false);
+    expect(isMeasureFunction(measure)).toBe(false);
   });
 
-  it('returns true if the value is a MeasureFn', () => {
+  it('returns true if the value is a MeasureFunction', () => {
     const measure = createMeasure(new Converters([]));
-    expect(isMeasureFn(measure)).toBe(true);
+    expect(isMeasureFunction(measure)).toBe(true);
   });
 });
 
 describe(getConvertersFromMeasure, () => {
-  it('returns the Converters for a MeasureFn', () => {
+  it('returns the Converters for a MeasureFunction', () => {
     const converters = new Converters([]);
     const measure = createMeasure(converters);
     expect(getConvertersFromMeasure(measure)).toBe(converters);
