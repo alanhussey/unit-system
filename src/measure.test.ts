@@ -1,14 +1,14 @@
 import Converters from './Converters';
 import createMeasure, { CONVERTERS, isMeasureFn } from './measure';
 import Measurement from './Measurement';
-import Unit from './Unit';
+import { createUnit } from './Unit';
 
 describe(createMeasure, () => {
   describe('returns a function that', () => {
     it('creates Measurements', () => {
       const converters = new Converters([]);
       const measure = createMeasure(converters);
-      const feet = new Unit('foot');
+      const feet = createUnit('foot');
       expect(measure(1, feet)).toEqual(new Measurement(1, feet, converters));
     });
 

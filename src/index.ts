@@ -1,2 +1,2 @@
 export { createUnitSystem } from './createUnitSystem';
-export { default as Unit } from './Unit';
+export { createUnit, default as Unit } from './Unit';

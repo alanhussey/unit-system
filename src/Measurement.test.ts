@@ -1,12 +1,12 @@
 import Converters from './Converters';
-import Unit from './Unit';
+import Unit, { createUnit } from './Unit';
 import Measurement from './Measurement';
 import Convert from './Convert';
 
 const getMeasure = () => {
-  const inches = new Unit('inch');
-  const feet = new Unit('foot');
-  const celsius = new Unit('celsius');
+  const inches = createUnit('inch');
+  const feet = createUnit('foot');
+  const celsius = createUnit('celsius');
   const converters = new Converters([[feet, Convert.linear(12), inches]]);
   const measure = (value: number, unit: Unit) =>
     new Measurement(value, unit, converters);

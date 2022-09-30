@@ -5,3 +5,5 @@ export default class Unit {
     this.name = name;
   }
 }
+
+export const createUnit = (name: string) => new Unit(name);

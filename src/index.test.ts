@@ -1,12 +1,11 @@
-import { Unit } from './index';
-import { createUnitSystem } from './createUnitSystem';
+import { createUnitSystem, createUnit } from './index';
 
 test('example usage', () => {
-  const yards = new Unit('yard');
-  const feet = new Unit('foot');
-  const inches = new Unit('inch');
-  const centimeters = new Unit('centimeter');
-  const meters = new Unit('meter');
+  const yards = createUnit('yard');
+  const feet = createUnit('foot');
+  const inches = createUnit('inch');
+  const centimeters = createUnit('centimeter');
+  const meters = createUnit('meter');
 
   const measure = createUnitSystem`
     ${yards} * 3 -> ${feet}

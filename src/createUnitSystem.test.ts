@@ -1,10 +1,10 @@
 import Measurement from './Measurement';
-import { Unit } from './index';
+import { createUnit } from './index';
 import { createUnitSystem } from './createUnitSystem';
 
 describe(createUnitSystem, () => {
   it('returns a function for creating measurements', () => {
-    const inches = new Unit('inch');
+    const inches = createUnit('inch');
     const measure = createUnitSystem``;
     const measurement = measure(12, inches);
     expect(measurement).toBeInstanceOf(Measurement);
@@ -13,9 +13,9 @@ describe(createUnitSystem, () => {
   });
 
   it('can clone an existing unit system', () => {
-    const inches = new Unit('inch');
-    const feet = new Unit('foot');
-    const miles = new Unit('mile');
+    const inches = createUnit('inch');
+    const feet = createUnit('foot');
+    const miles = createUnit('mile');
     const oldMeasure = createUnitSystem`
       ${miles} * 5280 -> ${feet}
       ${feet} * 12 -> ${inches}
@@ -29,17 +29,17 @@ describe(createUnitSystem, () => {
   });
 
   it('can stitch together multiple unit systems', () => {
-    const ms = new Unit('meter');
-    const cms = new Unit('centimeter');
-    const kms = new Unit('kilometer');
+    const ms = createUnit('meter');
+    const cms = createUnit('centimeter');
+    const kms = createUnit('kilometer');
     const measureSI = createUnitSystem`
       ${ms} * 100 -> ${cms}
       ${ms} / 1000 -> ${kms}
     `;
 
-    const inches = new Unit('inch');
-    const feet = new Unit('foot');
-    const miles = new Unit('mile');
+    const inches = createUnit('inch');
+    const feet = createUnit('foot');
+    const miles = createUnit('mile');
     const measureUS = createUnitSystem`
       ${miles} * 5280 -> ${feet}
       ${feet} * 12 -> ${inches}

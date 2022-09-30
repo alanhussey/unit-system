@@ -1,11 +1,11 @@
 import Convert, { LinearConverter } from './Convert';
 import Converters from './Converters';
-import Unit from './Unit';
+import Unit, { createUnit } from './Unit';
 
 describe(Converters, () => {
   it('throws if duplicate conversions are declared', () => {
-    const feet = new Unit('foot');
-    const inches = new Unit('inch');
+    const feet = createUnit('foot');
+    const inches = createUnit('inch');
     expect(() => {
       new Converters([
         [feet, Convert.linear(12), inches],
@@ -20,7 +20,7 @@ describe(Converters, () => {
   });
 
   it('throws if a conversion is declared between a unit and itself', () => {
-    const feet = new Unit('foot');
+    const feet = createUnit('foot');
     expect(() => {
       new Converters([[feet, Convert.linear(999), feet]]);
     }).toThrowError(
@@ -30,9 +30,9 @@ describe(Converters, () => {
 
   describe('[Symbol.iterator]', () => {
     it('implements the iterable protocol', () => {
-      const yards = new Unit('yard');
-      const feet = new Unit('foot');
-      const inches = new Unit('inch');
+      const yards = createUnit('yard');
+      const feet = createUnit('foot');
+      const inches = createUnit('inch');
       const converters = new Converters([
         [feet, Convert.linear(12), inches],
         [yards, Convert.linear(3), feet],
@@ -42,9 +42,9 @@ describe(Converters, () => {
     });
 
     it('yields a sequence of edges', () => {
-      const yards = new Unit('yard');
-      const feet = new Unit('foot');
-      const inches = new Unit('inch');
+      const yards = createUnit('yard');
+      const feet = createUnit('foot');
+      const inches = createUnit('inch');
       const converters = new Converters([
         [feet, Convert.linear(12), inches],
         [yards, Convert.linear(3), feet],
@@ -60,9 +60,9 @@ describe(Converters, () => {
     });
 
     it('can be used to clone a Converters', () => {
-      const yards = new Unit('yard');
-      const feet = new Unit('foot');
-      const inches = new Unit('inch');
+      const yards = createUnit('yard');
+      const feet = createUnit('foot');
+      const inches = createUnit('inch');
       const convertersA = new Converters([
         [feet, Convert.linear(12), inches],
         [yards, Convert.linear(3), feet],
@@ -78,46 +78,46 @@ describe(Converters, () => {
 
   describe(Converters.prototype.get, () => {
     it('returns null when there are no converters', () => {
-      const feet = new Unit('foot');
-      const inches = new Unit('inch');
+      const feet = createUnit('foot');
+      const inches = createUnit('inch');
       const converters = new Converters([]);
       expect(converters.get(feet, inches)).toBe(null);
     });
 
     it('returns null when a converter cannot be found between the given units', () => {
-      const feet = new Unit('foot');
-      const inches = new Unit('inch');
-      const yards = new Unit('yard');
+      const feet = createUnit('foot');
+      const inches = createUnit('inch');
+      const yards = createUnit('yard');
       const converters = new Converters([[yards, Convert.linear(3), feet]]);
       expect(converters.get(feet, inches)).toBe(null);
     });
 
     it('returns the identity converter when the given units are the same', () => {
-      const feet = new Unit('foot');
+      const feet = createUnit('foot');
       const converters = new Converters([]);
       expect(converters.get(feet, feet)).toEqual(Convert.linear(1));
     });
 
     it('returns the declared converter when the two units are from an explicitly-declared converter', () => {
-      const feet = new Unit('foot');
-      const yards = new Unit('yard');
+      const feet = createUnit('foot');
+      const yards = createUnit('yard');
       const yardsToFeet = Convert.linear(3);
       const converters = new Converters([[yards, yardsToFeet, feet]]);
       expect(converters.get(yards, feet)).toBe(yardsToFeet);
     });
 
     it('returns the inverse converter when converting in reverse', () => {
-      const feet = new Unit('foot');
-      const yards = new Unit('yard');
+      const feet = createUnit('foot');
+      const yards = createUnit('yard');
       const yardsToFeet = Convert.linear(3);
       const converters = new Converters([[yards, yardsToFeet, feet]]);
       expect(converters.get(feet, yards)).toEqual(yardsToFeet.inverse);
     });
 
     it('returns a simplified converter when more than one declared converter is needed', () => {
-      const yards = new Unit('yard');
-      const feet = new Unit('foot');
-      const inches = new Unit('inch');
+      const yards = createUnit('yard');
+      const feet = createUnit('foot');
+      const inches = createUnit('inch');
       const converters = new Converters([
         [yards, Convert.linear(3), feet],
         [feet, Convert.linear(12), inches],
@@ -126,11 +126,11 @@ describe(Converters, () => {
     });
 
     it('returns a simplified converter when more than one declared converter is needed (multiple)', () => {
-      const yards = new Unit('yard');
-      const feet = new Unit('foot');
-      const inches = new Unit('inch');
-      const centimeters = new Unit('centimeter');
-      const meters = new Unit('meter');
+      const yards = createUnit('yard');
+      const feet = createUnit('foot');
+      const inches = createUnit('inch');
+      const centimeters = createUnit('centimeter');
+      const meters = createUnit('meter');
       const converters = new Converters([
         [yards, Convert.linear(3), feet],
         [feet, Convert.linear(12), inches],
@@ -143,11 +143,11 @@ describe(Converters, () => {
     });
 
     it('returns a simplified and reversed converter when more than one declared converter is needed', () => {
-      const yards = new Unit('yard');
-      const feet = new Unit('foot');
-      const inches = new Unit('inch');
-      const centimeters = new Unit('centimeter');
-      const meters = new Unit('meter');
+      const yards = createUnit('yard');
+      const feet = createUnit('foot');
+      const inches = createUnit('inch');
+      const centimeters = createUnit('centimeter');
+      const meters = createUnit('meter');
       const converters = new Converters([
         [yards, Convert.linear(3), feet],
         [feet, Convert.linear(12), inches],
@@ -162,11 +162,11 @@ describe(Converters, () => {
     });
 
     it('caches a converter that has been simplified (and returns the same instance)', () => {
-      const yards = new Unit('yard');
-      const feet = new Unit('foot');
-      const inches = new Unit('inch');
-      const centimeters = new Unit('centimeter');
-      const meters = new Unit('meter');
+      const yards = createUnit('yard');
+      const feet = createUnit('foot');
+      const inches = createUnit('inch');
+      const centimeters = createUnit('centimeter');
+      const meters = createUnit('meter');
       const converters = new Converters([
         [yards, Convert.linear(3), feet],
         [feet, Convert.linear(12), inches],

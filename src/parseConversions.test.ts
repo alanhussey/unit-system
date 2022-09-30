@@ -1,13 +1,13 @@
 import Convert from './Convert';
-import Unit from './Unit';
+import { createUnit } from './Unit';
 import parseConversions from './parseConversions';
 import fc from 'fast-check';
 
 describe(parseConversions, () => {
   it('returns conversion tuples representing the declared conversions', () => {
-    const inches = new Unit('inch');
-    const feet = new Unit('foot');
-    const yards = new Unit('yard');
+    const inches = createUnit('inch');
+    const feet = createUnit('foot');
+    const yards = createUnit('yard');
     expect(
       Array.from(
         parseConversions`
@@ -22,9 +22,9 @@ describe(parseConversions, () => {
   });
 
   it('handles conversions with a `/ a`', () => {
-    const inches = new Unit('inch');
-    const feet = new Unit('foot');
-    const yards = new Unit('yard');
+    const inches = createUnit('inch');
+    const feet = createUnit('foot');
+    const yards = createUnit('yard');
     expect(
       Array.from(
         parseConversions`
@@ -39,8 +39,8 @@ describe(parseConversions, () => {
   });
 
   it('handles conversions with a `+ b`', () => {
-    const celsius = new Unit('Celsius');
-    const fahrenheit = new Unit('Fahrenheit');
+    const celsius = createUnit('Celsius');
+    const fahrenheit = createUnit('Fahrenheit');
     expect(
       Array.from(
         parseConversions`
@@ -51,8 +51,8 @@ describe(parseConversions, () => {
   });
 
   it('handles conversions with a `- b`', () => {
-    const celsius = new Unit('Celsius');
-    const fahrenheit = new Unit('Fahrenheit');
+    const celsius = createUnit('Celsius');
+    const fahrenheit = createUnit('Fahrenheit');
     expect(
       Array.from(
         parseConversions`
@@ -64,8 +64,8 @@ describe(parseConversions, () => {
   });
 
   it('handles conversions with an implicit `a=1`', () => {
-    const celsius = new Unit('Celsius');
-    const kelvin = new Unit('Kelvin');
+    const celsius = createUnit('Celsius');
+    const kelvin = createUnit('Kelvin');
     expect(
       Array.from(
         parseConversions`
@@ -76,8 +76,8 @@ describe(parseConversions, () => {
   });
 
   it('ignores comment lines', () => {
-    const celsius = new Unit('Celsius');
-    const kelvin = new Unit('Kelvin');
+    const celsius = createUnit('Celsius');
+    const kelvin = createUnit('Kelvin');
     expect(
       Array.from(
         parseConversions`
@@ -89,8 +89,8 @@ describe(parseConversions, () => {
   });
 
   it('ignores trailing comments', () => {
-    const celsius = new Unit('Celsius');
-    const kelvin = new Unit('Kelvin');
+    const celsius = createUnit('Celsius');
+    const kelvin = createUnit('Kelvin');
     expect(
       Array.from(
         parseConversions`
@@ -101,8 +101,8 @@ describe(parseConversions, () => {
   });
 
   it('ignores blank lines', () => {
-    const celsius = new Unit('Celsius');
-    const kelvin = new Unit('Kelvin');
+    const celsius = createUnit('Celsius');
+    const kelvin = createUnit('Kelvin');
     expect(
       Array.from(
         parseConversions`
@@ -114,8 +114,8 @@ describe(parseConversions, () => {
   });
 
   it('ignores lines with just whitespace', () => {
-    const celsius = new Unit('Celsius');
-    const kelvin = new Unit('Kelvin');
+    const celsius = createUnit('Celsius');
+    const kelvin = createUnit('Kelvin');
     expect(
       Array.from(
         parseConversions`
@@ -143,7 +143,7 @@ describe(parseConversions, () => {
   it('throws on unparseable lines', () => {
     expect(() =>
       Array.from(parseConversions`
-    ${new Unit('left')} * 12 = ${new Unit('right')}
+    ${createUnit('left')} * 12 = ${createUnit('right')}
   `),
     ).toThrowError(
       new SyntaxError(
@@ -158,7 +158,7 @@ describe(parseConversions, () => {
       `a`,
       '*',
       parseConversions`
-        ${new Unit('left')} * -> ${new Unit('right')}
+        ${createUnit('left')} * -> ${createUnit('right')}
       `,
     ],
 
@@ -166,7 +166,7 @@ describe(parseConversions, () => {
       `a`,
       '/',
       parseConversions`
-        ${new Unit('left')} / -> ${new Unit('right')}
+        ${createUnit('left')} / -> ${createUnit('right')}
       `,
     ],
 
@@ -174,7 +174,7 @@ describe(parseConversions, () => {
       `b`,
       '+',
       parseConversions`
-        ${new Unit('left')} + -> ${new Unit('right')}
+        ${createUnit('left')} + -> ${createUnit('right')}
       `,
     ],
 
@@ -182,7 +182,7 @@ describe(parseConversions, () => {
       `b`,
       '-',
       parseConversions`
-        ${new Unit('left')} - -> ${new Unit('right')}
+        ${createUnit('left')} - -> ${createUnit('right')}
       `,
     ],
   ])('throws when the %s is missing (%s)', (_, operator, parsed) => {
@@ -198,28 +198,28 @@ describe(parseConversions, () => {
       '`a` coefficient',
       '*',
       parseConversions`
-        ${new Unit('left')} * nonsense -> ${new Unit('right')}
+        ${createUnit('left')} * nonsense -> ${createUnit('right')}
       `,
     ],
     [
       '`a` coefficient',
       '/',
       parseConversions`
-        ${new Unit('left')} / nonsense -> ${new Unit('right')}
+        ${createUnit('left')} / nonsense -> ${createUnit('right')}
       `,
     ],
     [
       '`b` term',
       '+',
       parseConversions`
-        ${new Unit('left')} + nonsense -> ${new Unit('right')}
+        ${createUnit('left')} + nonsense -> ${createUnit('right')}
       `,
     ],
     [
       '`b` term',
       '-',
       parseConversions`
-        ${new Unit('left')} - nonsense -> ${new Unit('right')}
+        ${createUnit('left')} - nonsense -> ${createUnit('right')}
       `,
     ],
   ])('throws when the %s is not a number (%s)', (_, op, parsed) => {
@@ -233,7 +233,7 @@ describe(parseConversions, () => {
   it('throws if the declaration does not end after the arrow (->)', () => {
     expect(() =>
       Array.from(parseConversions`
-        ${new Unit('left')} -> * 5 + 1 ${new Unit('right')}
+        ${createUnit('left')} -> * 5 + 1 ${createUnit('right')}
       `),
     ).toThrowErrorMatchingInlineSnapshot(`
       "Unexpected token(s) after end of conversion declaration:
@@ -245,8 +245,8 @@ describe(parseConversions, () => {
   test('parsing stress test', () => {
     fc.assert(
       fc.property(
-        fc.string().map((name) => new Unit(name)),
-        fc.string().map((name) => new Unit(name)),
+        fc.string().map((name) => createUnit(name)),
+        fc.string().map((name) => createUnit(name)),
         fc.constantFrom('*', '/'),
         fc.constantFrom(' ', ''),
         fc.nat().filter((x) => x > 0),
@@ -278,8 +278,8 @@ describe(parseConversions, () => {
   test('parsing stress test (no b term)', () => {
     fc.assert(
       fc.property(
-        fc.string().map((name) => new Unit(name)),
-        fc.string().map((name) => new Unit(name)),
+        fc.string().map((name) => createUnit(name)),
+        fc.string().map((name) => createUnit(name)),
         fc.array(fc.constantFrom(' ', ''), { minLength: 2, maxLength: 2 }),
         fc.nat().filter((x) => x > 0),
         (start, end, [_, __], a) => {
