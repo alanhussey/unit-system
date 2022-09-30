@@ -1,5 +1,8 @@
 import Converters from './Converters';
-import createMeasure, { CONVERTERS, isMeasureFn } from './measure';
+import createMeasure, {
+  getConvertersFromMeasure,
+  isMeasureFn,
+} from './measure';
 import Measurement from './Measurement';
 import { createUnit } from './Unit';
 
@@ -10,12 +13,6 @@ describe(createMeasure, () => {
       const measure = createMeasure(converters);
       const feet = createUnit('foot');
       expect(measure(1, feet)).toEqual(new Measurement(1, feet, converters));
-    });
-
-    it('has a property with the Converters', () => {
-      const converters = new Converters([]);
-      const measure = createMeasure(converters);
-      expect(measure[CONVERTERS]).toEqual(converters);
     });
   });
 });
@@ -34,5 +31,13 @@ describe(isMeasureFn, () => {
   it('returns true if the value is a MeasureFn', () => {
     const measure = createMeasure(new Converters([]));
     expect(isMeasureFn(measure)).toBe(true);
+  });
+});
+
+describe(getConvertersFromMeasure, () => {
+  it('returns the Converters for a MeasureFn', () => {
+    const converters = new Converters([]);
+    const measure = createMeasure(converters);
+    expect(getConvertersFromMeasure(measure)).toBe(converters);
   });
 });

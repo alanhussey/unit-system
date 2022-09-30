@@ -2,7 +2,7 @@ import Measurement from './Measurement';
 import Unit from './Unit';
 import Converters from './Converters';
 
-export const CONVERTERS = Symbol('unit-system internals - do not use');
+const CONVERTERS = Symbol('unit-system internals - do not use');
 
 export type MeasureFn = {
   (value: number, unit: Unit): Measurement;
@@ -20,3 +20,6 @@ export default function createMeasure(converters: Converters): MeasureFn {
     value: converters,
   });
 }
+
+export const getConvertersFromMeasure = (measure: MeasureFn) =>
+  measure[CONVERTERS];

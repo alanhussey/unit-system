@@ -1,4 +1,4 @@
-import createMeasure, { CONVERTERS, MeasureFn, isMeasureFn } from './measure';
+import createMeasure, { getConvertersFromMeasure, MeasureFn, isMeasureFn } from './measure';
 import Converters from './Converters';
 import Unit from './Unit';
 import parseConversions from './parseConversions';
@@ -17,7 +17,8 @@ function getAllConversions(
 ) {
   const conversions = parseConversions(fragments, ...args);
   const measures = args.filter(isMeasureFn);
-  return chain(conversions, ...measures.map((measure) => measure[CONVERTERS]));
+  const convertersFromMeasures = measures.map(getConvertersFromMeasure);
+  return chain(conversions, ...convertersFromMeasures);
 }
 
 export function createUnitSystem(
