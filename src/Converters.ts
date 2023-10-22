@@ -64,7 +64,7 @@ export default class Converters implements Iterable<Edge> {
     }
 
     // Happy path: a converter exists directly between `start` and `end`
-    if (this.graph.get(start).has(end)) {
+    if (this.has(start, end)) {
       const converter = this.graph.get(start).get(end) as Converter;
       return [converter];
     }
