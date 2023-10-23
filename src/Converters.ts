@@ -6,8 +6,11 @@ import {
 } from './Convert';
 import Unit from './Unit';
 import DefaultMap from './DefaultMap';
+import ExtendableError from './ExtendableError';
 
 type Edge = [Unit, Converter, Unit];
+
+class ConversionDeclarationError extends ExtendableError {}
 
 export default class Converters implements Iterable<Edge> {
   private graph: DefaultMap<Unit, Map<Unit, Converter>>;
@@ -34,12 +37,12 @@ export default class Converters implements Iterable<Edge> {
   // store a conversion and its inverse between two units
   private set(start: Unit, end: Unit, converter: Converter) {
     if (start === end) {
-      throw new TypeError(
+      throw new ConversionDeclarationError(
         'Cannot declare a conversion between a unit and itself',
       );
     }
     if (this.has(start, end)) {
-      throw new TypeError(
+      throw new ConversionDeclarationError(
         'Cannot declare two conversions for the same pair of units. ' +
           'Are you trying to declare the reverse of an existing conversion?',
       );
