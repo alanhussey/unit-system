@@ -59,6 +59,8 @@ class CompoundConverter implements Converter {
 const isLinearConverter = (converter: unknown): converter is LinearConverter =>
   converter instanceof LinearConverter;
 
+export function simplifyConverters(converters: LinearConverter[]): LinearConverter;
+export function simplifyConverters(converters: Converter[]): Converter;
 export function simplifyConverters(converters: Converter[]): Converter {
   if (converters.length === 1) {
     return converters[0];
