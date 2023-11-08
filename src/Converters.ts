@@ -13,18 +13,17 @@ type Edge = [Unit, Converter, Unit];
 class ConversionDeclarationError extends ExtendableError {}
 
 export default class Converters implements Iterable<Edge> {
-  private graph: DefaultMap<Unit, Map<Unit, Converter>>;
+  #graph = new DefaultMap<Unit, Map<Unit, Converter>>(() => new Map());
 
   constructor(edges: Iterable<Edge>) {
-    this.graph = new DefaultMap(() => new Map());
     for (const [start, converter, end] of edges) {
       this.set(start, end, converter);
     }
   }
 
   *[Symbol.iterator]() {
-    const seen: DefaultMap<Unit, Set<Unit>> = new DefaultMap(() => new Set());
-    for (const [start, converters] of this.graph) {
+    const seen = new DefaultMap<Unit, Set<Unit>>(() => new Set());
+    for (const [start, converters] of this.#graph) {
       for (const [end, converter] of converters) {
         // if the inverse has already been seen, skip this one
         if (seen.get(end).has(start)) continue;
@@ -32,6 +31,17 @@ export default class Converters implements Iterable<Edge> {
         yield <Edge>[start, converter, end];
       }
     }
+  }
+
+  get(start: Unit, end: Unit): Converter | null {
+    const converters = this.getShortestPath(start, end);
+    if (!converters) return null;
+    const converter = simplifyConverters(converters);
+    // cache a converter if it got simplified to make subsequent lookups faster
+    if (converters.length > 1 && !this.has(start, end)) {
+      this.set(start, end, converter);
+    }
+    return converter;
   }
 
   // store a conversion and its inverse between two units
@@ -47,14 +57,14 @@ export default class Converters implements Iterable<Edge> {
           'Are you trying to declare the reverse of an existing conversion?',
       );
     }
-    this.graph.get(start).set(end, converter);
-    if (converter instanceof LinearConverter && !this.has(end, start)) {
-      this.graph.get(end).set(start, converter.inverse);
+    this.#graph.get(start).set(end, converter);
+    if (!this.has(end, start) && converter instanceof LinearConverter) {
+      this.#graph.get(end).set(start, converter.inverse);
     }
   }
 
   private has(start: Unit, end: Unit) {
-    return this.graph.get(start).has(end);
+    return this.#graph.get(start).has(end);
   }
 
   // a modified breadth-first search – instead of returning the path between
@@ -68,7 +78,7 @@ export default class Converters implements Iterable<Edge> {
 
     // Happy path: a converter exists directly between `start` and `end`
     if (this.has(start, end)) {
-      const converter = this.graph.get(start).get(end) as Converter;
+      const converter = this.#graph.get(start).get(end) as Converter;
       return [converter];
     }
 
@@ -82,7 +92,7 @@ export default class Converters implements Iterable<Edge> {
 
     let node;
     while ((node = queue.shift())) {
-      for (const [unit, converter] of this.graph.get(node)) {
+      for (const [unit, converter] of this.#graph.get(node)) {
         if (paths.has(unit)) continue;
 
         const path = (paths.get(node) || []).concat([converter]);
@@ -96,16 +106,5 @@ export default class Converters implements Iterable<Edge> {
     }
 
     return null;
-  }
-
-  get(start: Unit, end: Unit): Converter | null {
-    const converters = this.getShortestPath(start, end);
-    if (!converters) return null;
-    const converter = simplifyConverters(converters);
-    // cache a converter if it got simplified to make subsequent lookups faster
-    if (converters.length > 1 && !this.has(start, end)) {
-      this.set(start, end, converter);
-    }
-    return converter;
   }
 }
