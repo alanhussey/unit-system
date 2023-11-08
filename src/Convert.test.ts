@@ -25,17 +25,7 @@ const isInvalidCoefficientError = (err: unknown): err is Error =>
 //   > getRelativeDifference(6, 5) -> .2
 //   > getRelativeDifference(5e100, 6e100) -> .2
 const getRelativeDifference = (left: number, right: number) => {
-  const [min, max] = left < right ? [left, right] : [right, left];
-  let diff;
-  diff = max / min - 1;
-  // strangely, the above comparison sometimes sends us down the wrong path
-  if (diff < 0) {
-    diff = min / max - 1;
-  }
-  if (diff < 0) {
-    throw new Error('Impossibly, the relative difference is always negative');
-  }
-  return diff;
+  return Math.max(left / right, right / left) - 1;
 };
 
 const isVeryClose = (left: number, right: number, threshold = 1e-10) =>
