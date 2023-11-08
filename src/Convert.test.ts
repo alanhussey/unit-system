@@ -1,5 +1,9 @@
 import * as fc from 'fast-check';
-import Convert, { LinearConverter, simplifyConverters } from './Convert';
+import Convert, {
+  LinearConverter,
+  simplifyConverters,
+  InvalidCoefficientError,
+} from './Convert';
 
 // all floats, excluding NaN and Infinity
 const realFloat = () =>
@@ -16,8 +20,7 @@ const linearConverter = () =>
   linearConverterArgs().map((args) => new LinearConverter(...args));
 
 const isInvalidCoefficientError = (err: unknown): err is Error =>
-  err instanceof Error &&
-  /^A linear conversion with an `a` of .+ is not invertible$/.test(err.message);
+  err instanceof InvalidCoefficientError;
 
 // Get a decimal representing the relative difference between two numbers.
 //   > getRelativeDifference(1, 1) -> 0
@@ -57,9 +60,7 @@ describe(LinearConverter, () => {
     'disallows an `a` value of %s',
     (a) => {
       expect(() => new LinearConverter(a)).toThrowError(
-        new Error(
-          `A linear conversion with an \`a\` of ${a} is not invertible`,
-        ),
+        new InvalidCoefficientError(a)
       );
     },
   );
@@ -86,9 +87,9 @@ describe(LinearConverter, () => {
           fc.array(linearConverter()),
           realFloatNonZero(),
           (linearConverters, value) => {
-            let linearConverter;
+            let converter;
             try {
-              linearConverter = LinearConverter.fromLinearConverters(
+              converter = LinearConverter.fromLinearConverters(
                 linearConverters,
               );
             } catch (err) {
@@ -96,7 +97,7 @@ describe(LinearConverter, () => {
               throw err;
             }
 
-            const actual = linearConverter.convert(value);
+            const actual = converter.convert(value);
             const expected = linearConverters.reduce(
               (result, converter) => converter.convert(result),
               value,
@@ -126,13 +127,12 @@ describe(simplifyConverters, () => {
         } catch (err) {
           if (isInvalidCoefficientError(err)) {
             // due to the nature of floats, it's possible for fast-check to give us
-            // a sequence of linear conversions that reduce to an `a` factor of `0`.
+            // a sequence of linear conversions that reduce to an illegal coefficient.
             // We could try to .filter(...) that out, but we'd eventually just be
             // implementing `LinearConverter.fromLinearConverters` again in this test.
             return true;
-          } else {
-            throw err;
           }
+          throw err;
         }
       }),
     );

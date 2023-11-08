@@ -1,7 +1,17 @@
+import ExtendableError from './ExtendableError';
+
 const sum = (arr: number[]): number => arr.reduce((a, b) => a + b, 0);
 
 export interface Converter {
   convert(value: number): number;
+}
+
+export class InvalidCoefficientError extends ExtendableError {
+  constructor(coefficient: number) {
+    super(
+      `A linear conversion with a coefficient of ${coefficient} is not invertible`,
+    );
+  }
 }
 
 export class LinearConverter implements Converter {
@@ -10,9 +20,7 @@ export class LinearConverter implements Converter {
 
   constructor(a: number, b = 0) {
     if (a === 0 || !Number.isFinite(a)) {
-      throw new Error(
-        `A linear conversion with an \`a\` of ${a} is not invertible`,
-      );
+      throw new InvalidCoefficientError(a);
     }
     this.a = a;
     this.b = b;
