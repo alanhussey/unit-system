@@ -8,12 +8,34 @@ import { createUnit } from './Unit';
 
 describe(createMeasure, () => {
   describe('returns a function that', () => {
+    const converters = new Converters([]);
+    const measure = createMeasure(converters);
+    const feet = createUnit('foot');
+    const seconds = createUnit('second');
+
     it('creates Measurements', () => {
-      const converters = new Converters([]);
-      const measure = createMeasure(converters);
-      const feet = createUnit('foot');
-      expect(measure(1, feet)).toEqual(new Measurement(1, feet, converters));
+      expect(measure(1, feet)).toEqual(new Measurement(1, [feet], undefined, converters));
     });
+
+    it('create measurements with numerator and denominator units', () => {
+      expect(measure(10, feet, seconds)).toEqual(
+        new Measurement(10, [feet], [seconds], converters)
+      )
+    });
+
+    it('create measurements with numerator and denominator units 2', () => {
+      expect(measure(10, [feet], [seconds])).toEqual(
+        new Measurement(10, [feet], [seconds], converters)
+      )
+    });
+
+    it('can express a number with a unitless numerator', () => {
+      expect(
+        measure(10, null, [seconds]) // 10 hertz
+      ).toEqual(
+        new Measurement(10, [], [seconds], converters)
+      )
+    })
   });
 });
 

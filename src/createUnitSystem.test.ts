@@ -7,9 +7,9 @@ describe(createUnitSystem, () => {
     const inches = createUnit('inch');
     const measure = createUnitSystem``;
     const measurement = measure(12, inches);
-    expect(measurement).toBeInstanceOf(Measurement);
-    expect(measurement.value).toBe(12);
-    expect(measurement.unit).toBe(inches);
+    expect(measurement).toEqual(
+      new Measurement(12, inches, undefined, expect.anything())
+    );
   });
 
   it('can clone an existing unit system', () => {
